@@ -13,7 +13,6 @@ class PageRouting(BaseStreamANN):
         '''
         raise NotImplementedError
         
-        
     def insert(self, X: np.array, ids: npt.NDArray[np.uint32]) -> None:
         '''
         Implement this for your algorithm
