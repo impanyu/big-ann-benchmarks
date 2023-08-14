@@ -262,7 +262,6 @@ def main():
     for definition in definitions:
         queue.put(definition)
     #run_worker(args, queue)
-    
     workers = [multiprocessing.Process(target=run_worker, args=(args, queue))
                for i in range(1)]
     [worker.start() for worker in workers]

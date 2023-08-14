@@ -19,6 +19,8 @@ class PageRouting(BaseStreamANN):
         X is num_vectos * num_dims matrix 
         ids is num_vectors-sized array which indicates ids for each vector
         '''
+        for x in X:
+            self.index.insert_node(x)
         raise NotImplementedError
     
     def delete(self, ids: npt.NDArray[np.uint32]) -> None:
