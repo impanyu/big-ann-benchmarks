@@ -1,8 +1,11 @@
 from neurips23.streaming.base import BaseStreamANN
 
 class PageRouting(BaseStreamANN):
-    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3):
-        pass
+    def __init__(self, metric, index_params):
+        self.name = "page_routing"
+        
+
+
     
     def setup(self, dtype, max_pts, ndims) -> None:
         '''
@@ -11,8 +14,12 @@ class PageRouting(BaseStreamANN):
         max_pts is an upper bound on non-deleted points that the index must support
         ndims is the size of the dataset
         '''
-        raise NotImplementedError
+        #raise NotImplementedError
         
+
+
+
+
     def insert(self, X: np.array, ids: npt.NDArray[np.uint32]) -> None:
         '''
         Implement this for your algorithm

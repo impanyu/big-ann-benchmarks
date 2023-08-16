@@ -300,7 +300,7 @@ class Page_Index:
         page = self.get_page(page_id)
         return page.get_node_by_id(node_id)
 
-    def insert_node(self, vector):
+    def insert_node(self, vector, new_node_id = None):
         rand_idx = random.randint(0,len(self.node_ids))
         start_node_id = list(self.node_ids.keys())[rand_idx]
    
@@ -308,7 +308,8 @@ class Page_Index:
 
         top_k_node_ids,visited_node_ids = self.search(vector, start_node_id, self.k, self.L, self.max_visits)
 
-        new_node_id = self.get_aviailable_node_id()
+        if new_node_id is None:
+            new_node_id = self.get_aviailable_node_id()
 
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
 
