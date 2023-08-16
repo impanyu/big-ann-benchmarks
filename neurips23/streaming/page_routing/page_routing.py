@@ -1,4 +1,5 @@
 from neurips23.streaming.base import BaseStreamANN
+import data_structures
 
 class PageRouting(BaseStreamANN):
     def __init__(self, metric, index_params):
@@ -15,7 +16,8 @@ class PageRouting(BaseStreamANN):
         ndims is the size of the dataset
         '''
         #raise NotImplementedError
-        
+        self.index = Page_Index(ndims, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3):
+      
 
 
 
