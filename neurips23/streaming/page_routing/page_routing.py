@@ -4,7 +4,10 @@ import data_structures
 class PageRouting(BaseStreamANN):
     def __init__(self, metric, index_params):
         self.name = "page_routing"
-        
+    
+    def index_name(self): 
+        return self.name
+    
 
 
     
