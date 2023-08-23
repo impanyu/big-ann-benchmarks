@@ -1,5 +1,6 @@
 from neurips23.streaming.base import BaseStreamANN
-import data_structures
+import data_structures.page_index as page_index
+import random
 
 class PageRouting(BaseStreamANN):
     def __init__(self, metric, index_params):
@@ -7,9 +8,6 @@ class PageRouting(BaseStreamANN):
     
     def index_name(self): 
         return self.name
-    
-
-
     
     def setup(self, dtype, max_pts, ndims) -> None:
         '''
@@ -19,7 +17,11 @@ class PageRouting(BaseStreamANN):
         ndims is the size of the dataset
         '''
         #raise NotImplementedError
-        self.index = Page_Index(ndims, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
+        max_neighbors = 50
+        index_file = "index.bin"
+        meta_data_file = "meta_data.json"
+
+        self.index = page_index(ndims, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
 
       
 
@@ -29,8 +31,10 @@ class PageRouting(BaseStreamANN):
         X is num_vectos * num_dims matrix 
         ids is num_vectors-sized array which indicates ids for each vector
         '''
-        for x in X:
-            self.index.insert_node(x)
+        for i in range(len(X)):
+            x = X[i]
+            x_id = ids[i]
+            self.index.insert_node(x,x_id)
         #raise NotImplementedError
     
     def delete(self, ids: npt.NDArray[np.uint32]) -> None:
@@ -38,9 +42,25 @@ class PageRouting(BaseStreamANN):
         Implement this for your algorithm
         delete the vectors labelled with ids.
         '''
-        raise NotImplementedError
+        for id in ids:
+            self.index.delete_node(id)
+        #raise NotImplementedError
 
     
     def query(self, X, k):
         """Carry out a batch query for k-NN of query set X."""
-        raise NotImplementedError()
+        rand_idx = random.randint(0,len(self.node_ids))
+        start_node_id = list(self.index.node_ids.keys())[rand_idx]
+        self.res = []
+        for i in range(len(X)):
+            x = X[i]    
+            top_k_node_ids,visited_node_ids = self.search(x, start_node_id, k, self.index.L, self.index.max_visits)
+            self.res.append(top_k_node_ids)
+            
+        self.res = np.array(self.res)
+        #raise NotImplementedError()
+
+    def set_query_arguments(self, query_args):
+        pass
+
+    
