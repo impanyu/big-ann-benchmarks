@@ -19,11 +19,9 @@ class PageRouting(BaseStreamANN):
         ndims is the size of the dataset
         '''
         #raise NotImplementedError
-        self.index = Page_Index(ndims, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3):
+        self.index = Page_Index(ndims, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
+
       
-
-
-
 
     def insert(self, X: np.array, ids: npt.NDArray[np.uint32]) -> None:
         '''
@@ -33,7 +31,7 @@ class PageRouting(BaseStreamANN):
         '''
         for x in X:
             self.index.insert_node(x)
-        raise NotImplementedError
+        #raise NotImplementedError
     
     def delete(self, ids: npt.NDArray[np.uint32]) -> None:
         '''
