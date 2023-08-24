@@ -333,7 +333,7 @@ class Page_Index:
 
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
 
-        new_node.add_neighbors(visited_node_ids)
+        new_node.add_neighbors(list(visited_node_ids))
 
         best_page = self.find_best_page(new_node)
 
