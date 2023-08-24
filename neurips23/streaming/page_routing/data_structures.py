@@ -134,7 +134,9 @@ class Page:
         for node in self.nodes:
             if node.get_id() == node_id:
                 return node
-        print("here")
+        print(f"node_id {node_id} not found in page {self.page_id}")
+        for node in self.nodes:
+            print(node.get_id())
         return None
 
 
