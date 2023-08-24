@@ -22,11 +22,11 @@ class PageRouting(BaseStreamingANN):
         index_file = "index.bin"
         meta_data_file = "meta_data.json"
 
-        self.index = page_index(ndims, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
+        self.index = Page_Index(ndims, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
 
       
 
-    def insert(self, X: np.array, ids: npt.NDArray[np.uint32]) -> None:
+    def insert(self, X: np.array, ids: np.NDArray[np.uint32]) -> None:
         '''
         Implement this for your algorithm
         X is num_vectos * num_dims matrix 
@@ -38,7 +38,7 @@ class PageRouting(BaseStreamingANN):
             self.index.insert_node(x,x_id)
         #raise NotImplementedError
     
-    def delete(self, ids: npt.NDArray[np.uint32]) -> None:
+    def delete(self, ids: np.NDArray[np.uint32]) -> None:
         '''
         Implement this for your algorithm
         delete the vectors labelled with ids.
