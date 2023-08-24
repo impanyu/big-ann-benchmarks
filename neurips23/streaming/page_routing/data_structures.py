@@ -23,7 +23,7 @@ class Node:
 
     def add_neighbors(self, new_neighbor_ids):
         self.neighbor_ids = self.neighbor_ids + new_neighbor_ids
-        if self.neighbor_ids > self.max_neighbors:
+        if len(self.neighbor_ids) > self.max_neighbors:
             self.prune_neighbors()
 
     def find_nearest_neighbors(self):
