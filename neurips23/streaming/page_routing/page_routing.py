@@ -1,5 +1,5 @@
 from neurips23.streaming.base import BaseStreamingANN
-import data_structures.page_index as page_index
+from .data_structures import page_index
 import random
 
 class PageRouting(BaseStreamingANN):
