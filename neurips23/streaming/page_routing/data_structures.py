@@ -301,15 +301,35 @@ class Page_Index:
         return page.get_node_by_id(node_id)
 
     def insert_node(self, vector, new_node_id = None):
-        rand_idx = random.randint(0,len(self.node_ids))
+
+        if new_node_id is None:
+            new_node_id = self.get_aviailable_node_id()
+
+        if len(self.node_ids) == 0:
+            new_page = Page(self.nodes_per_page)
+            self.number_of_pages += 1
+            new_page_id = self.get_available_page_id()
+            new_page.page_id = new_page_id
+            self.page_buffers.append(new_page)
+            if len(self.page_buffers) > self.page_buffers_size:
+                self.page_buffers.pop(0)
+
+            self.changed_pages[new_page_id] = new_page
+            new_node = Node(vector, new_node_id, self, self.max_neighbors)
+            new_page.add_node(new_node)
+            self.node_ids[new_node_id] = new_page_id
+            return
+
+
+        rand_idx = random.randint(0,len(self.node_ids)-1)
         start_node_id = list(self.node_ids.keys())[rand_idx]
+        
    
         #start_node = self.get_node(start_node)
 
         top_k_node_ids,visited_node_ids = self.search(vector, start_node_id, self.k, self.L, self.max_visits)
 
-        if new_node_id is None:
-            new_node_id = self.get_aviailable_node_id()
+        
 
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
 
@@ -328,6 +348,8 @@ class Page_Index:
             new_page_id = self.get_available_page_id()
             new_page.page_id = new_page_id
             self.page_buffers.append(new_page)
+            if len(self.page_buffers) > self.page_buffers_size:
+                self.page_buffers.pop(0)
             self.changed_pages[new_page_id] = new_page
 
             for node in new_page.get_nodes():
