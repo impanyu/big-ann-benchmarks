@@ -168,6 +168,7 @@ class Page_Index:
         self.max_ios_per_hop = max_ios_per_hop
 
         try:
+            '''
             if os.path.exists(self.meta_data_file):
                 with open(self.meta_data_file, 'r') as f:
                     
@@ -175,16 +176,17 @@ class Page_Index:
                     self.node_ids = self.meta_data['node_ids']
                     self.available_page_ids = self.meta_data['available_page_ids']
                     self.available_node_ids = self.meta_data['available_node_ids']
-            else:
-                self.node_ids = {}
-                self.available_page_ids = [0]
-                self.available_node_ids = [0]
-                self.meta_data = {'node_ids':self.node_ids, 'available_page_ids':self.available_page_ids, 'available_node_ids':self.available_node_ids}
-                with open(self.meta_data_file, 'w') as f:
-                    json.dump(self.meta_data, f)
+            '''
+            #else:
+            self.node_ids = {}
+            self.available_page_ids = [0]
+            self.available_node_ids = [0]
+            self.meta_data = {'node_ids':self.node_ids, 'available_page_ids':self.available_page_ids, 'available_node_ids':self.available_node_ids}
+            with open(self.meta_data_file, 'w') as f:
+                json.dump(self.meta_data, f)
 
-                with open(self.index_file, 'wb') as f:
-                    f.write(np.array([]).tobytes())
+            with open(self.index_file, 'wb') as f:
+                f.write(np.array([]).tobytes())
 
         except Exception as e:
             print(f"An error occurred: {e}")
