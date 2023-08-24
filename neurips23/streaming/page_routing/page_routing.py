@@ -1,6 +1,7 @@
 from neurips23.streaming.base import BaseStreamingANN
 from .data_structures import Page_Index
 import random
+import numpy as np
 
 class PageRouting(BaseStreamingANN):
     def __init__(self, metric, index_params):
