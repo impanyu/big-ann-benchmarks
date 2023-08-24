@@ -134,6 +134,7 @@ class Page:
         for node in self.nodes:
             if node.get_id() == node_id:
                 return node
+        print("here")
         return None
 
 
@@ -298,8 +299,7 @@ class Page_Index:
         if node_id not in self.node_ids:
             return None
         page_id = self.node_ids[node_id]
-        page = self.get_page(page_id)
-        print(page.get_id())
+        page = self.get_page(page_id)    
         return page.get_node_by_id(node_id)
 
     def insert_node(self, vector, new_node_id = None):
