@@ -294,9 +294,9 @@ class Page_Index:
         return page
     
     def get_node(self, node_id):
-        print(node_id)
+        
         if node_id not in self.node_ids:
-            
+            print(node_id)
             return None
         page_id = self.node_ids[node_id]
         page = self.get_page(page_id)
