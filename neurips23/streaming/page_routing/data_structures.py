@@ -99,7 +99,7 @@ class Page:
 
     # this function splits the page into two pages and returns the new page
     def split_page(self):
-        G = nx.DiGraph()
+        G = nx.Graph()
         node_ids = [node.get_id() for node in self.nodes]
         G.add_nodes_from(node_ids)
         for node in self.nodes:
