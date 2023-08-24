@@ -374,7 +374,7 @@ class Page_Index:
             self.changed_pages[new_page_id] = new_page
             self.changed_pages[best_page.get_id()] = best_page
 
-            if len(self.changed_pages) > self.page_buffers_size:
+            if len(self.changed_pages) > 10:
                 self.dump_changed_pages()
 
             for node in new_page.get_nodes():
