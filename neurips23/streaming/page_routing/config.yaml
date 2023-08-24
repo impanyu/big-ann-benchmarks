@@ -1,8 +1,8 @@
 random-xs:
     diskann: 
-      docker-tag: neurips23-streaming-diskann
-      module: neurips23.streaming.diskann.diskann-str
-      constructor: diskann
+      docker-tag: neurips23-streaming-page_routing
+      module: neurips23.streaming.page_routing.page_routing
+      constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
         base:
@@ -12,9 +12,9 @@ random-xs:
             [{"Ls":50, "T":8}]
 random-xs-clustered:
     diskann: 
-      docker-tag: neurips23-streaming-diskann
-      module: neurips23.streaming.diskann.diskann-str
-      constructor: diskann
+      docker-tag: neurips23-streaming-page_routing
+      module: neurips23.streaming.page_routing.page_routing
+      constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
         base:
@@ -24,9 +24,9 @@ random-xs-clustered:
             [{"Ls":50, "T":8}]
 msspacev-1M:
     diskann: 
-      docker-tag: neurips23-streaming-diskann
-      module: neurips23.streaming.diskann.diskann-str
-      constructor: diskann
+      docker-tag: neurips23-streaming-page_routing
+      module: neurips23.streaming.page_routing.page_routing
+      constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
         base:
@@ -37,9 +37,9 @@ msspacev-1M:
              {"Ls":100, "T":16}]
 msturing-1M:
     diskann: 
-      docker-tag: neurips23-streaming-diskann
-      module: neurips23.streaming.diskann.diskann-str
-      constructor: diskann
+      docker-tag: neurips23-streaming-page_routing
+      module: neurips23.streaming.page_routing.page_routing
+      constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
         base:
@@ -50,9 +50,9 @@ msturing-1M:
              {"Ls":100, "T":16}]
 msspacev-10M:
     diskann: 
-      docker-tag: neurips23-streaming-diskann
-      module: neurips23.streaming.diskann.diskann-str
-      constructor: diskann
+      docker-tag: neurips23-streaming-page_routing
+      module: neurips23.streaming.page_routing.page_routing
+      constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
         base:
@@ -62,9 +62,9 @@ msspacev-10M:
             [{"Ls":100, "T":16}]
 msturing-10M:
     diskann: 
-      docker-tag: neurips23-streaming-diskann
-      module: neurips23.streaming.diskann.diskann-str
-      constructor: diskann
+      docker-tag: neurips23-streaming-page_routing
+      module: neurips23.streaming.page_routing.page_routing
+      constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
         base:
@@ -74,9 +74,9 @@ msturing-10M:
             [{"Ls":100, "T":16}]
 msturing-10M-clustered:
     diskann: 
-      docker-tag: neurips23-streaming-diskann
-      module: neurips23.streaming.diskann.diskann-str
-      constructor: diskann
+      docker-tag: neurips23-streaming-page_routing
+      module: neurips23.streaming.page_routing.page_routing
+      constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
         base:

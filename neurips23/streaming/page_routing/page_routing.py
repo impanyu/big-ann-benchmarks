@@ -56,11 +56,12 @@ class PageRouting(BaseStreamANN):
             x = X[i]    
             top_k_node_ids,visited_node_ids = self.search(x, start_node_id, k, self.index.L, self.index.max_visits)
             self.res.append(top_k_node_ids)
-            
+
         self.res = np.array(self.res)
         #raise NotImplementedError()
 
     def set_query_arguments(self, query_args):
         pass
 
-    
+    def __str__(self):
+        return f'page_routing({self.name})'
