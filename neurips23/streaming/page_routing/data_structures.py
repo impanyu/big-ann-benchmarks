@@ -347,16 +347,26 @@ class Page_Index:
 
         self.changed_pages[best_page.get_id()] = best_page
 
+        self.node_ids[new_node_id] = best_page.get_id()
+
         # split page if necessary
         if len(best_page.get_nodes()) > self.nodes_per_page:
             new_page = best_page.split_page()
             self.number_of_pages += 1
             new_page_id = self.get_available_page_id()
             new_page.page_id = new_page_id
+
+            # add the new page to the page buffer
             self.page_buffers.append(new_page)
             if len(self.page_buffers) > self.page_buffers_size:
                 self.page_buffers.pop(0)
+
+            self.page_buffers.append(best_page)
+            if len(self.page_buffers) > self.page_buffers_size:
+                self.page_buffers.pop(0)
+
             self.changed_pages[new_page_id] = new_page
+            self.changed_pages[best_page.get_id()] = best_page
 
             for node in new_page.get_nodes():
                 self.node_ids[node.get_id()] = new_page_id
@@ -364,7 +374,7 @@ class Page_Index:
             for node in best_page.get_nodes():
                 self.node_ids[node.get_id()] = best_page.get_id()
 
-        self.node_ids[new_node_id] = best_page.get_id()
+        
 
         # add the new node to the neighbor list of the neighbors
         for neighbor_id in new_node.get_neighbor_ids():
