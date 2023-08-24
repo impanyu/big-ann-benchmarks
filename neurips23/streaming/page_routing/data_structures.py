@@ -331,6 +331,7 @@ class Page_Index:
    
         #start_node = self.get_node(start_node)
         print("inserting node")
+        print(self.node_ids)
 
         top_k_node_ids,visited_node_ids = self.search(vector, start_node_id, self.k, self.L, self.max_visits)
 
