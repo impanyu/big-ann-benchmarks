@@ -1,8 +1,8 @@
-from neurips23.streaming.base import BaseStreamANN
+from neurips23.streaming.base import BaseStreamingANN
 import data_structures.page_index as page_index
 import random
 
-class PageRouting(BaseStreamANN):
+class PageRouting(BaseStreamingANN):
     def __init__(self, metric, index_params):
         self.name = "page_routing"
     
