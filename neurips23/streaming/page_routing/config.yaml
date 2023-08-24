@@ -1,5 +1,5 @@
 random-xs:
-    diskann: 
+    page_routing: 
       docker-tag: neurips23-streaming-page_routing
       module: neurips23.streaming.page_routing.page_routing
       constructor: PageRouting
@@ -11,7 +11,7 @@ random-xs:
           query-args: |
             [{"Ls":50, "T":8}]
 random-xs-clustered:
-    diskann: 
+    page_routing: 
       docker-tag: neurips23-streaming-page_routing
       module: neurips23.streaming.page_routing.page_routing
       constructor: PageRouting
@@ -23,7 +23,7 @@ random-xs-clustered:
           query-args: |
             [{"Ls":50, "T":8}]
 msspacev-1M:
-    diskann: 
+    page_routing: 
       docker-tag: neurips23-streaming-page_routing
       module: neurips23.streaming.page_routing.page_routing
       constructor: PageRouting
@@ -36,7 +36,7 @@ msspacev-1M:
             [{"Ls":300, "T":16},
              {"Ls":100, "T":16}]
 msturing-1M:
-    diskann: 
+    page_routing: 
       docker-tag: neurips23-streaming-page_routing
       module: neurips23.streaming.page_routing.page_routing
       constructor: PageRouting
@@ -49,7 +49,7 @@ msturing-1M:
             [{"Ls":300, "T":16},
              {"Ls":100, "T":16}]
 msspacev-10M:
-    diskann: 
+    page_routing: 
       docker-tag: neurips23-streaming-page_routing
       module: neurips23.streaming.page_routing.page_routing
       constructor: PageRouting
@@ -61,7 +61,7 @@ msspacev-10M:
           query-args: |
             [{"Ls":100, "T":16}]
 msturing-10M:
-    diskann: 
+    page_routing: 
       docker-tag: neurips23-streaming-page_routing
       module: neurips23.streaming.page_routing.page_routing
       constructor: PageRouting
@@ -73,7 +73,7 @@ msturing-10M:
           query-args: |
             [{"Ls":100, "T":16}]
 msturing-10M-clustered:
-    diskann: 
+    page_routing: 
       docker-tag: neurips23-streaming-page_routing
       module: neurips23.streaming.page_routing.page_routing
       constructor: PageRouting
