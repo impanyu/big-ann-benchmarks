@@ -192,16 +192,16 @@ class Page_Index:
 
     def get_available_page_id(self):
         if len(self.available_page_ids) == 0:
-            self.available_page_ids[0] += 1
-            return self.available_page_ids[0] - 1
+            self.available_page_ids[0] = 1
+            return 0
         else:
             return self.available_page_ids.pop(0)
             
 
     def get_aviailable_node_id(self):
         if len(self.available_node_ids) == 0:
-            self.available_node_ids[0] += 1
-            return self.available_node_ids[0] - 1
+            self.available_node_ids[0] = 1
+            return 0
         else:
             return self.available_node_ids.pop(0)
 
