@@ -281,7 +281,7 @@ class Page_Index:
 
         for i in range(self.nodes_per_page):
             node_data = page_data[i*(self.dim+self.max_neighbors+1):(i+1)*(self.dim+self.max_neighbors+1)]
-            print(len(node_data))
+        
             node_id = int(node_data[0])
             vector = list(node_data[1:self.dim])
             node_neighbors = list(node_data[self.dim:].astype(np.int32))
@@ -370,6 +370,9 @@ class Page_Index:
 
             self.changed_pages[new_page_id] = new_page
             self.changed_pages[best_page.get_id()] = best_page
+
+            if len(self.changed_pages) > self.page_buffers_size:
+                self.dump_changed_pages()
 
             for node in new_page.get_nodes():
                 self.node_ids[node.get_id()] = new_page_id
