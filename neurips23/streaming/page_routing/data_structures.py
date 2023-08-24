@@ -352,6 +352,11 @@ class Page_Index:
 
         self.node_ids[new_node_id] = best_page.get_id()
 
+
+        self.page_buffers.append(best_page)
+        if len(self.page_buffers) > self.page_buffers_size:
+            self.page_buffers.pop(0)
+
         # split page if necessary
         if len(best_page.get_nodes()) > self.nodes_per_page:
             new_page = best_page.split_page()
@@ -364,9 +369,7 @@ class Page_Index:
             if len(self.page_buffers) > self.page_buffers_size:
                 self.page_buffers.pop(0)
 
-            self.page_buffers.append(best_page)
-            if len(self.page_buffers) > self.page_buffers_size:
-                self.page_buffers.pop(0)
+
 
             self.changed_pages[new_page_id] = new_page
             self.changed_pages[best_page.get_id()] = best_page
