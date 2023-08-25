@@ -36,6 +36,7 @@ class Node:
             distance = self.get_distance(neighbor.get_vector())
             heapq.heappush(priority_queue, (distance, neighbor_id))
         distance, nearest_neighbor_id = heapq.heappop(priority_queue)
+        return distance,nearest_neighbor_id
     
     #TODO to be implemented
     def prune_neighbors(self):
@@ -317,8 +318,8 @@ class Page_Index:
                 return None
         
         page = Page(self.nodes_per_page, page_id)
-        print(len(page_data))
-        print(page_id)
+        #print(len(page_data))
+        #print(page_id)
 
         for i in range(self.nodes_per_page):
             node_data = page_data[i*(self.dim+self.max_neighbors+1):(i+1)*(self.dim+self.max_neighbors+1)]
