@@ -453,7 +453,7 @@ class Page_Index:
         page.changed = True
         #self.add_to_page_buffer(page)
 
-        self.changed_pages[page_id] = page
+        #self.changed_pages[page_id] = page
         self.node_ids.pop(node_id,None)
         self.available_node_ids.insert(0,node_id)
 
