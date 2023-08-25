@@ -77,8 +77,8 @@ class Node:
         return self.node_id
     
     def get_distance(self, other_vector):
-        print(len(self.vector))
-        print(len(other_vector))
+        #print(len(self.vector))
+        #print(len(other_vector))
         
         return np.linalg.norm(np.array(self.vector) - np.array(other_vector))
     
@@ -376,7 +376,7 @@ class Page_Index:
         
    
         #start_node = self.get_node(start_node)
-        print("inserting node")
+        #print("inserting node")
         #print(self.node_ids)
 
         top_k_node_ids,visited_node_ids = self.search(vector, start_node_id, self.k, self.L, self.max_visits)
@@ -442,7 +442,7 @@ class Page_Index:
    
     #in some case delete_node may not delete the link pointing to the deleted node, so deleted node may still be in the neighbor list of other nodes
     def delete_node(self, node_id):
-        print("deleting node")
+        #print("deleting node")
         if node_id not in self.node_ids:
             return 
         page_id = self.node_ids[node_id]
