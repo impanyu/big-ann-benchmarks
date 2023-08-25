@@ -50,8 +50,9 @@ class PageRouting(BaseStreamingANN):
     
     def query(self, X, k):
         """Carry out a batch query for k-NN of query set X."""
-        rand_idx = random.randint(0,len(self.node_ids))
+        rand_idx = random.randint(0,len(self.index.node_ids))
         start_node_id = list(self.index.node_ids.keys())[rand_idx]
+
         self.res = []
         for i in range(len(X)):
             x = X[i]    
