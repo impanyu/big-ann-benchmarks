@@ -77,6 +77,9 @@ class Node:
         return self.node_id
     
     def get_distance(self, other_vector):
+        print(len(self.vector))
+        print(len(other_vector))
+        
         return np.linalg.norm(np.array(self.vector) - np.array(other_vector))
     
 
