@@ -467,7 +467,7 @@ class Page_Index:
             if not neighbor:
                 continue
             neighbor_page_id = self.node_ids[neighbor_id]
-            neighbor_page = self.get_page(neighbor_id)
+            neighbor_page = self.get_page(neighbor_page_id)
             
             
             if node_id in neighbor.get_neighbor_ids():
