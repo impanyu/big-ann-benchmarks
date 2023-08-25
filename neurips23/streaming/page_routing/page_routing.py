@@ -56,7 +56,7 @@ class PageRouting(BaseStreamingANN):
         self.res = []
         for i in range(len(X)):
             x = X[i]    
-            top_k_node_ids,visited_node_ids = self.search(x, start_node_id, k, self.index.L, self.index.max_visits)
+            top_k_node_ids,visited_node_ids = self.index.search(x, start_node_id, k, self.index.L, self.index.max_visits)
             self.res.append(top_k_node_ids)
 
         self.res = np.array(self.res)
