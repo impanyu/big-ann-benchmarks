@@ -147,7 +147,7 @@ class Page:
 
 
 class Page_Index:
-    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=20, max_ios_per_hop = 3):
+    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3):
         self.k = k
         self.L = L
         self.max_visits = max_visits
