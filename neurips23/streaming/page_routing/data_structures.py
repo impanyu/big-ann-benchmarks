@@ -85,6 +85,7 @@ class Page:
         self.nodes_per_page = nodes_per_page
         self.nodes = []
         self.page_id = page_id
+        self.changed = False
 
     def add_node(self, new_node):
         self.nodes.append(new_node)
@@ -138,7 +139,7 @@ class Page:
         #for node in self.nodes:
         #    print(node.get_id())
         return None
-
+    
 
 
 
@@ -159,7 +160,7 @@ class Page_Index:
         self.node_ids = {}
         self.page_buffers = []
 
-        self.changed_pages = {}
+        #self.changed_pages = {}
 
         self.page_buffers_size = page_buffer_size
 
@@ -193,8 +194,21 @@ class Page_Index:
 
     def delete_page(self,page_id):
         self.available_page_ids.insert(0,page_id)
-                
 
+    def add_to_page_buffer(self,page):
+        for i in range(len(self.page_buffers)):
+            if page.get_id() == self.page_buffers[i].get_id():
+                self.page_buffers.pop(i)
+                break
+
+        self.page_buffers.append(page)
+        if len(self.page_buffers) > self.page_buffers_size:
+            popped_page = self.page_buffers.pop(0)
+            if popped_page.changed:
+                self.dump_changed_page(popped_page)
+
+
+                
     def get_available_page_id(self):
         if len(self.available_page_ids) == 1:
             self.available_page_ids[0] = self.available_page_ids[0]+1
@@ -236,7 +250,23 @@ class Page_Index:
     def merge_pages(self, page1, page2):
         page1.merge_page(page2)
         self.delete_page(page2.get_id())
-        self.changed_pages[page1.get_id()]=page1
+        self.number_of_pages -= 1
+        page1.changed = True
+
+        #self.changed_pages[page1.get_id()]=page1
+
+    def dump_changed_page(self, page):  
+        page_id = page.get_id()
+        with open(self.index_file, 'rb+') as f:
+            f.seek(page_id *self.page_size)
+            for node in page.get_nodes():
+                node_data = np.append([node.get_id()], node.get_vector())
+                node_data = np.append(node_data,node.get_neighbor_ids())
+                f.write(node_data.astype(np.float32).tobytes())
+            # padding with zeros
+            if len(page.get_nodes()) < self.nodes_per_page:
+                f.write(np.zeros(int(self.page_size/4) - len(page.get_nodes())*(self.dim+self.max_neighbors+1)).astype(np.float32).tobytes())
+
 
     def dump_changed_pages(self):
         for page_id in self.changed_pages:
@@ -261,6 +291,7 @@ class Page_Index:
     def get_page(self,page_id):
         for page in self.page_buffers: 
             if page_id == page.get_id():
+                self.add_to_page_buffer(page)
                 return page
         
         return self.get_page_from_file(page_id)
@@ -293,9 +324,7 @@ class Page_Index:
 
             page.add_node(node)
 
-        self.page_buffers.append(page)
-        if len(self.page_buffers) > self.page_buffers_size:
-            self.page_buffers.pop(0)
+        self.add_to_page_buffer(page)
 
         return page
     
@@ -317,11 +346,12 @@ class Page_Index:
             self.number_of_pages += 1
             new_page_id = self.get_available_page_id()
             new_page.page_id = new_page_id
-            self.page_buffers.append(new_page)
-            if len(self.page_buffers) > self.page_buffers_size:
-                self.page_buffers.pop(0)
+            
+            new_page.changed = True
+            self.add_to_page_buffer(new_page)
 
-            self.changed_pages[new_page_id] = new_page
+
+            #self.changed_pages[new_page_id] = new_page
             new_node = Node(vector, new_node_id, self, self.max_neighbors)
             new_page.add_node(new_node)
             self.node_ids[new_node_id] = new_page_id
@@ -348,14 +378,12 @@ class Page_Index:
 
         best_page.add_node(new_node)
 
-        self.changed_pages[best_page.get_id()] = best_page
+        #self.changed_pages[best_page.get_id()] = best_page
 
         self.node_ids[new_node_id] = best_page.get_id()
 
-
-        self.page_buffers.append(best_page)
-        if len(self.page_buffers) > self.page_buffers_size:
-            self.page_buffers.pop(0)
+        best_page.changed = True
+        #self.add_to_page_buffer(best_page)
 
         # split page if necessary
         if len(best_page.get_nodes()) > self.nodes_per_page:
@@ -364,19 +392,16 @@ class Page_Index:
             new_page_id = self.get_available_page_id()
             new_page.page_id = new_page_id
 
+            new_page.changed = True
             # add the new page to the page buffer
-            self.page_buffers.append(new_page)
-            if len(self.page_buffers) > self.page_buffers_size:
-                self.page_buffers.pop(0)
+            self.add_to_page_buffer(new_page)
 
 
 
-            self.changed_pages[new_page_id] = new_page
-            self.changed_pages[best_page.get_id()] = best_page
+            #self.changed_pages[new_page_id] = new_page
+            #self.changed_pages[best_page.get_id()] = best_page
 
-            if len(self.changed_pages) > 10:
-                self.dump_changed_pages()
-
+            # update the node ids
             for node in new_page.get_nodes():
                 self.node_ids[node.get_id()] = new_page_id
             
@@ -389,9 +414,15 @@ class Page_Index:
         for neighbor_id in new_node.get_neighbor_ids():
             neighbor = self.get_node(neighbor_id)
             neighbor_page_id = self.node_ids[neighbor_id]
+            
+            
             if neighbor:
+                neighbor_page = self.get_page(neighbor_page_id)
+                neighbor_page.changed = True
+
                 neighbor.add_neighbor(new_node_id)
-                self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
+                
+                #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
 
 
 
@@ -405,6 +436,10 @@ class Page_Index:
         page = self.get_page(page_id)
         node = page.get_node_by_id(node_id)
         page.remove_node(node)
+
+        page.changed = True
+        #self.add_to_page_buffer(page)
+
         self.changed_pages[page_id] = page
         self.node_ids.pop(node_id,None)
         self.available_node_ids.insert(0,node_id)
@@ -415,14 +450,17 @@ class Page_Index:
             neighbor = self.get_node(neighbor_id)
             if not neighbor:
                 continue
-            neighbor_page = self.get_page(self.node_ids[neighbor_id])
+            neighbor_page_id = self.node_ids[neighbor_id]
+            neighbor_page = self.get_page(neighbor_id)
+            
             
             if node_id in neighbor.get_neighbor_ids():
                 neighbor.remove_neighbor(node_id)
                 other_neighbor_ids =[other_neighbor_id for other_neighbor_id in node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
                 neighbor.add_neighbors(other_neighbor_ids)
-            
-                self.changed_pages[self.node_ids[neighbor_id]] = neighbor_page
+
+                neighbor_page.changed = True
+                #self.changed_pages[self.node_ids[neighbor_id]] = neighbor_page
 
      
            
