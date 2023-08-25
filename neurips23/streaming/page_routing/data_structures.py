@@ -317,6 +317,7 @@ class Page_Index:
                 return None
         
         page = Page(self.nodes_per_page, page_id)
+        print(len(page_data))
 
         for i in range(self.nodes_per_page):
             node_data = page_data[i*(self.dim+self.max_neighbors+1):(i+1)*(self.dim+self.max_neighbors+1)]
