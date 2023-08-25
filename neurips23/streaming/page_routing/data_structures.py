@@ -279,6 +279,10 @@ class Page_Index:
                 for node in page.get_nodes():
                     node_data = np.append([node.get_id()], node.get_vector())
                     node_data = np.append(node_data,node.get_neighbor_ids())
+                    #padding within node
+                    if len(node_data) < self.dim+self.max_neighbors+1:
+                        node_data = np.append(node_data, np.zeros(self.dim+self.max_neighbors+1-len(node_data)))
+                        
                     f.write(node_data.astype(np.float32).tobytes())
                 # padding with zeros
                 if len(page.get_nodes()) < self.nodes_per_page:
