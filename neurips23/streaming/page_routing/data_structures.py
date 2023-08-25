@@ -265,14 +265,14 @@ class Page_Index:
             for node in page.get_nodes():
                 node_data = np.append([node.get_id()], node.get_vector())
                 node_data = np.append(node_data,node.get_neighbor_ids())
-                #padding within node
+                #padding within node with -1s
                 if len(node_data) < self.dim+self.max_neighbors+1:
-                    node_data = np.append(node_data, np.zeros(self.dim+self.max_neighbors+1-len(node_data)))
+                    node_data = np.append(node_data, np.full(self.dim+self.max_neighbors+1-len(node_data),-1))
                         
                 f.write(node_data.astype(np.float32).tobytes())
-            # padding with zeros
+            # padding with -1s
             if len(page.get_nodes()) < self.nodes_per_page:
-                f.write(np.zeros(int(self.page_size/4) - len(page.get_nodes())*(self.dim+self.max_neighbors+1)).astype(np.float32).tobytes())
+                f.write(np.full(int(self.page_size/4) - len(page.get_nodes())*(self.dim+self.max_neighbors+1),-1).astype(np.float32).tobytes())
 
 
     def dump_changed_pages(self):
@@ -324,6 +324,9 @@ class Page_Index:
             node_id = int(node_data[0])
             vector = list(node_data[1:self.dim])
             node_neighbors = list(node_data[self.dim:].astype(np.int32))
+
+            node_neighbors = [neighbor_id for neighbor_id in node_neighbors if neighbor_id != -1]
+
             if node_id == -1:
                 break
 
