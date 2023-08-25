@@ -50,12 +50,12 @@ class Node:
 
             for i in range(len(self.neighbor_ids)-1,-1,-1):
                 neighbor_id = self.neighbor_ids[i]
-                neighbor = self.get_node(neighbor_id)
+                neighbor = self.page_index.get_node(neighbor_id)
                 if neighbor is None:
                     self.neighbor_ids.remove(neighbor_id)
                     continue
 
-                distance_1 = nearest_neighbor.distance(neighbor.get_vector())
+                distance_1 = nearest_neighbor.get_distance(neighbor.get_vector())
                 distance_2 = self.get_distance(neighbor.get_vector())
 
                 if self.alpha * distance_1 < distance_2:
