@@ -322,13 +322,15 @@ class Page_Index:
             node_data = page_data[i*(self.dim+self.max_neighbors+1):(i+1)*(self.dim+self.max_neighbors+1)]
         
             node_id = int(node_data[0])
-            vector = list(node_data[1:self.dim])
-            node_neighbors = list(node_data[self.dim:].astype(np.int32))
+            if node_id == -1:
+                break
+
+            vector = list(node_data[1:self.dim+1])
+            node_neighbors = list(node_data[self.dim+1:].astype(np.int32))
 
             node_neighbors = [neighbor_id for neighbor_id in node_neighbors if neighbor_id != -1]
 
-            if node_id == -1:
-                break
+            
 
             node = Node(vector, int(node_id),self, self.max_neighbors)
             node.add_neighbors(node_neighbors)
