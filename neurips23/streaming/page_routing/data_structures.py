@@ -530,7 +530,11 @@ class Page_Index:
 
             num_visits += 1
 
-        return [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))],visited
+        top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
+        if len(top_k_node_ids) < k:
+            top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
+
+        return top_k_node_ids,visited
 
 
 
