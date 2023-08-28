@@ -4,7 +4,7 @@ import json
 import networkx as nx
 import random
 import os
-
+import threading
 
 
 class Node:
@@ -16,14 +16,24 @@ class Node:
         self.alpha = alpha
         self.page_index = page_index
 
+    def remove_deleted_neighbors(self):
+        for i in range(len(self.neighbor_ids)-1,-1,-1):
+            neighbor_id = self.neighbor_ids[i]
+            neighbor = self.page_index.get_node(neighbor_id)
+            if neighbor is None:
+                self.neighbor_ids.remove(neighbor_id)
+
     def add_neighbor(self, new_neighbor_id):
         self.neighbor_ids.append(new_neighbor_id)
+
         if len(self.neighbor_ids) > self.max_neighbors:
+            self.remove_deleted_neighbors()
             self.prune_neighbors()
 
     def add_neighbors(self, new_neighbor_ids):
         self.neighbor_ids = self.neighbor_ids + new_neighbor_ids
         if len(self.neighbor_ids) > self.max_neighbors:
+            self.remove_deleted_neighbors()
             self.prune_neighbors()
 
     def find_nearest_neighbors(self):
@@ -32,9 +42,12 @@ class Node:
         for neighbor_id in self.neighbor_ids:
             neighbor = self.page_index.get_node(neighbor_id)
             if neighbor is None:
+                #self.neighbor_ids.remove(neighbor_id)
                 continue
             distance = self.get_distance(neighbor.get_vector())
             heapq.heappush(priority_queue, (distance, neighbor_id))
+        if len(priority_queue) == 0:
+            return None, None
         distance, nearest_neighbor_id = heapq.heappop(priority_queue)
         return distance,nearest_neighbor_id
     
@@ -43,6 +56,9 @@ class Node:
         neighbor_ids = []
         while len(self.neighbor_ids) > 0:
             distance, nearest_neighbor_id = self.find_nearest_neighbors()
+            if nearest_neighbor_id is None:
+                break
+
             nearest_neighbor = self.page_index.get_node(nearest_neighbor_id)
             neighbor_ids.append(nearest_neighbor_id)
             if len(neighbor_ids) >= self.max_neighbors:
@@ -52,7 +68,7 @@ class Node:
                 neighbor_id = self.neighbor_ids[i]
                 neighbor = self.page_index.get_node(neighbor_id)
                 if neighbor is None:
-                    self.neighbor_ids.remove(neighbor_id)
+                    #self.neighbor_ids.remove(neighbor_id)
                     continue
 
                 distance_1 = nearest_neighbor.get_distance(neighbor.get_vector())
@@ -235,6 +251,7 @@ class Page_Index:
             
             neighbor = self.get_node(neighbor_id)
             if not neighbor:
+                node.remove_neighbor(neighbor_id)
                 continue
             neighbor_page_id = self.node_ids[neighbor_id]
             page_co_located_counts[neighbor_page_id] = page_co_located_counts.get(neighbor_page_id, 0) + 1
@@ -441,6 +458,10 @@ class Page_Index:
                 
                 #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
 
+            else:
+                new_node.remove_neighbor(neighbor_id)
+
+
 
 
    
@@ -466,6 +487,7 @@ class Page_Index:
         for neighbor_id in node.get_neighbor_ids():
             neighbor = self.get_node(neighbor_id)
             if not neighbor:
+                node.remove_neighbor(neighbor_id)
                 continue
             neighbor_page_id = self.node_ids[neighbor_id]
             neighbor_page = self.get_page(neighbor_page_id)
@@ -513,6 +535,7 @@ class Page_Index:
                 if neighbor_id not in visited:
                     continue
                 if neighbor_id not in self.node_ids:
+                    current_node.remove_neighbor(neighbor_id)
                     continue
                 neighbor_page_id = self.node_ids[neighbor_id]
                 ioed_pages.add(neighbor_page_id)
