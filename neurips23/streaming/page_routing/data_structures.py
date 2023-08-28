@@ -158,6 +158,8 @@ class Page:
     # this function splits the page into two pages and returns the new page
     def split_page(self):
         G = nx.Graph()
+        self.get_lock().acquire_write()
+        
         node_ids = [node.get_id() for node in self.nodes]
         G.add_nodes_from(node_ids)
         for node in self.nodes:
@@ -173,7 +175,10 @@ class Page:
         nodes_1 = [node for node in self.nodes if node.get_id() in part1]
         nodes_2 = [node for node in self.nodes if node.get_id() in part2]
 
+        
         self.nodes = nodes_1
+        self.get_lock().release_write()
+
         new_page = Page(self.nodes_per_page)
         new_page.add_nodes(nodes_2)
 
@@ -494,6 +499,9 @@ class Page_Index:
 
         #self.changed_pages[best_page.get_id()] = best_page
         best_page.add_node(new_node)
+
+        best_page.lock.release_write()
+
         self.node_ids[new_node_id] = best_page.get_id()
         self.add_to_page_w_buffer(best_page)
         self.add_to_page_rw_buffer(best_page)
@@ -504,7 +512,10 @@ class Page_Index:
             new_page = best_page.split_page()
             self.number_of_pages += 1
             new_page_id = self.get_available_page_id()
+
+            #new_page.lock.acquire_write()
             new_page.page_id = new_page_id
+            #new_page.lock.release_write()
 
             new_page.changed = True
             # add the new page to the page buffer
@@ -514,16 +525,17 @@ class Page_Index:
 
             #self.changed_pages[new_page_id] = new_page
             #self.changed_pages[best_page.get_id()] = best_page
-            new_page.lock.acquire_write()
+            
             # update the node ids
             for node in new_page.get_nodes():
                 self.node_ids[node.get_id()] = new_page_id
-            new_page.lock.release_write()
             
+            
+        
             for node in best_page.get_nodes():
                 self.node_ids[node.get_id()] = best_page.get_id()
-
-        best_page.lock.release_write()
+    
+        
 
         # add the new node to the neighbor list of the neighbors
         for neighbor_id in new_node.get_neighbor_ids():
