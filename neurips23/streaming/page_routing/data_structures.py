@@ -650,7 +650,7 @@ class Page_Index:
 
             current_node_page = self.get_page(self.node_ids[current_node_id])
 
-            current_node_page.get_lock().acquire_read()
+            #current_node_page.get_lock().acquire_read()
 
             ioed_pages = set()
 
@@ -677,7 +677,7 @@ class Page_Index:
                 top_L = [heapq.heappop(to_visit) for _ in range(L)]
                 to_visit = top_L
 
-            current_node_page.get_lock().release_read() 
+            #current_node_page.get_lock().release_read() 
 
         to_visit.extend(popped_nodes)
         heapq.heapify(to_visit)
