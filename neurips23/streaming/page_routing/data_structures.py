@@ -71,6 +71,7 @@ class Node:
     def find_nearest_neighbors(self):
 
         priority_queue = []
+        heapq.heapify(priority_queue)
         for neighbor_id in self.neighbor_ids:
             neighbor = self.page_index.get_node(neighbor_id)
             if neighbor is None:
@@ -605,6 +606,8 @@ class Page_Index:
         start_node = self.get_node(start_node_id)
         dis = start_node.get_distance(query_vector)
         to_visit = [(dis, start_node_id)]
+
+        heapq.heapify(to_visit)
         visited = set() # Keep track of visited nodes
 
         popped_nodes = []
@@ -665,7 +668,8 @@ class Page_Index:
             #current_node_page.get_lock().release_read() 
 
         to_visit.extend(popped_nodes)
-        print(to_visit)
+        heapq.heapify(to_visit)
+        #print(to_visit)
 
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
