@@ -631,7 +631,7 @@ class Page_Index:
             if current_node is None:
                 continue
 
-            popped_nodes.append(current_node_id)
+            popped_nodes.append((distance,current_node_id))
 
             current_node_page = self.get_page(self.node_ids[current_node_id])
 
