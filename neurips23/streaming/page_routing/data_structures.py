@@ -614,6 +614,10 @@ class Page_Index:
             # Mark this node as visited
             visited.add(current_node_id)
 
+            if current_node_id not in self.node_ids:
+                # need to load a new page, increase the number of io
+                num_visits += 1
+
             current_node = self.get_node(current_node_id)
 
             if current_node is None:
@@ -629,10 +633,9 @@ class Page_Index:
             neighbor_ids = current_node.get_neighbor_ids()
 
             for neighbor_id in neighbor_ids:
-                if neighbor_id not in visited:
+                if neighbor_id in visited:
                     continue
                 if neighbor_id not in self.node_ids:
-                    current_node.remove_neighbor(neighbor_id)
                     continue
                 neighbor_page_id = self.node_ids[neighbor_id]
                 ioed_pages.add(neighbor_page_id)
@@ -649,7 +652,7 @@ class Page_Index:
 
             #current_node_page.get_lock().release_read() 
 
-            num_visits += 1
+            
 
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
