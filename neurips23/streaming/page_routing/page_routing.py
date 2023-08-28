@@ -94,7 +94,7 @@ class PageRouting(BaseStreamingANN):
         futures = {}
 
         
-        xs = X.tolist()
+        #xs = X.tolist()
 
         with ThreadPoolExecutor() as executor:
             for i in range(len(X)):
