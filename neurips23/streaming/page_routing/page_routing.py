@@ -2,6 +2,8 @@ from neurips23.streaming.base import BaseStreamingANN
 from .data_structures import Page_Index
 import random
 import numpy as np
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 class PageRouting(BaseStreamingANN):
     def __init__(self, metric, index_params):
@@ -32,20 +34,36 @@ class PageRouting(BaseStreamingANN):
         X is num_vectos * num_dims matrix 
         ids is num_vectors-sized array which indicates ids for each vector
         '''
+        
+        threads = []
+
         for i in range(len(X)):
             x = X[i]
             x_id = ids[i]
-            self.index.insert_node(x,x_id)
-        #raise NotImplementedError
+
+            thread = threading.Thread(target=self.index.insert_node, args=(x,x_id))
+            thread.start()
+            threads.append(thread)
+
+            
+        # Wait for all threads to finish
+        for thread in threads:
+            thread.join()
     
     def delete(self, ids: np.ndarray[np.uint32]) -> None:
         '''
         Implement this for your algorithm
         delete the vectors labelled with ids.
         '''
+        threads = []
         for id in ids:
-            self.index.delete_node(id)
-        #raise NotImplementedError
+            thread = threading.Thread(target=self.index.delete_node, args=(id))
+            thread.start()
+            threads.append(thread)
+
+        # Wait for all threads to finish
+        for thread in threads:
+            thread.join()
 
     
     def query(self, X, k):
@@ -54,13 +72,18 @@ class PageRouting(BaseStreamingANN):
         start_node_id = list(self.index.node_ids.keys())[rand_idx]
 
         self.res = []
-        for i in range(len(X)):
-            x = X[i]    
-            top_k_node_ids,visited_node_ids = self.index.search(x, start_node_id, k, self.index.L, self.index.max_visits)
-            self.res.append(top_k_node_ids)
 
-        self.res = np.array(self.res)
-        #raise NotImplementedError()
+
+
+        xs = X.tolist()
+
+        with ThreadPoolExecutor() as executor:
+            results = list(executor.map(self.index.search, xs, [start_node_id]*len(xs), [k]*len(xs), [self.index.L]*len(xs), [self.index.max_visits]*len(xs)))
+
+        
+        for result in results:
+            self.res.append(result[0])
+
 
     def set_query_arguments(self, query_args):
         pass
