@@ -122,6 +122,9 @@ class Node:
     def get_vector(self):
         return self.vector
     
+    def set_vector(self, new_vector):
+        self.vector = new_vector
+    
     def get_id(self):
         return self.node_id
     
@@ -462,8 +465,11 @@ class Page_Index:
             self.add_to_page_w_buffer(new_page)
             self.add_to_page_rw_buffer(new_page)
             return
-
-
+        
+        # check if node already exists
+        if new_node_id in self.node_ids:
+            new_node = self.get_node(new_node_id)
+            new_node.set_vector(vector)
         
         
    
