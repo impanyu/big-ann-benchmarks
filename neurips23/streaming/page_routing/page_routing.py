@@ -8,6 +8,8 @@ from concurrent.futures import ThreadPoolExecutor
 class PageRouting(BaseStreamingANN):
     def __init__(self, metric, index_params):
         self.name = "page_routing"
+        self.insert_threads = index_params.get("insert_threads")
+        self.delete_threads = self.insert_threads
     
     def index_name(self): 
         return self.name
@@ -34,7 +36,14 @@ class PageRouting(BaseStreamingANN):
         X is num_vectos * num_dims matrix 
         ids is num_vectors-sized array which indicates ids for each vector
         '''
-        
+
+        with ThreadPoolExecutor(max_workers=self.insert_threads) as executor:
+            # Submit tasks to the executor
+            for i in range(len(X)):
+                x = X[i]
+                x_id = ids[i]
+                executor.submit(self.index.insert_node, x, x_id)
+        '''
         threads = []
 
         for i in range(len(X)):
@@ -49,11 +58,19 @@ class PageRouting(BaseStreamingANN):
         # Wait for all threads to finish
         for thread in threads:
             thread.join()
+        '''
     
     def delete(self, ids: np.ndarray[np.uint32]) -> None:
         '''
         Implement this for your algorithm
         delete the vectors labelled with ids.
+        '''
+        with ThreadPoolExecutor(max_workers=self.delete_threads) as executor:
+            # Submit tasks to the executor
+            for id in ids:
+
+                executor.submit(self.index.delete_node, id)
+
         '''
         threads = []
         for id in ids:
@@ -64,6 +81,7 @@ class PageRouting(BaseStreamingANN):
         # Wait for all threads to finish
         for thread in threads:
             thread.join()
+        '''
 
     
     def query(self, X, k):
