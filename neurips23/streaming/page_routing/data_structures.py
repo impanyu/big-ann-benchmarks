@@ -608,7 +608,7 @@ class Page_Index:
                 continue
 
             current_node_page = self.get_page(self.node_ids[current_node_id])
-            with current_node_page.lock.acquire_read():
+            with current_node_page.get_lock().acquire_read():
 
 
 
