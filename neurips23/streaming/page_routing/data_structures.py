@@ -607,6 +607,8 @@ class Page_Index:
         to_visit = [(dis, start_node_id)]
         visited = set() # Keep track of visited nodes
 
+        popped_nodes = []
+
 
         num_visits = 0
 
@@ -628,6 +630,8 @@ class Page_Index:
 
             if current_node is None:
                 continue
+
+            popped_nodes.append(current_node_id)
 
             current_node_page = self.get_page(self.node_ids[current_node_id])
 
@@ -652,15 +656,15 @@ class Page_Index:
                 neighbor_distance = neighbor_node.get_distance(query_vector)
                 
                 heapq.heappush(to_visit, (neighbor_distance, neighbor_id))
-                print(to_visit)
+                
 
-            #if len(to_visit) > L:
-            #    top_L = [heapq.heappop(to_visit) for _ in range(L)]
-            #    to_visit = top_L
+            if len(to_visit) > L:
+                top_L = [heapq.heappop(to_visit) for _ in range(L)]
+                to_visit = top_L
 
             #current_node_page.get_lock().release_read() 
 
-            
+        to_visit.extend(popped_nodes)
 
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
