@@ -458,15 +458,14 @@ class Page_Index:
             return
 
 
-        rand_idx = random.randint(0,len(self.node_ids)-1)
-        start_node_id = list(self.node_ids.keys())[rand_idx]
+        
         
    
         #start_node = self.get_node(start_node)
         #print("inserting node")
         #print(self.node_ids)
 
-        top_k_node_ids,visited_node_ids = self.search(vector, start_node_id, self.k, self.L, self.max_visits)
+        top_k_node_ids,visited_node_ids = self.search(vector, 0, self.k, self.L, self.max_visits)
 
         
 
@@ -579,6 +578,12 @@ class Page_Index:
     def search(self, query_vector, start_node_id, k, L, max_visits):
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
+        if len(self.node_ids) == 0:
+            return [],set()
+
+        rand_idx = random.randint(0,len(self.node_ids)-1)
+        start_node_id = list(self.node_ids.keys())[rand_idx]
+
         start_node = self.get_node(start_node_id)
         dis = start_node.get_distance(query_vector)
         to_visit = [(dis, start_node_id)]
