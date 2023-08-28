@@ -158,7 +158,7 @@ class Page:
     # this function splits the page into two pages and returns the new page
     def split_page(self):
         G = nx.Graph()
-        self.get_lock().acquire_write()
+        #self.get_lock().acquire_write()
 
         node_ids = [node.get_id() for node in self.nodes]
         G.add_nodes_from(node_ids)
@@ -177,7 +177,7 @@ class Page:
 
         
         self.nodes = nodes_1
-        self.get_lock().release_write()
+        #self.get_lock().release_write()
 
         new_page = Page(self.nodes_per_page)
         new_page.add_nodes(nodes_2)
