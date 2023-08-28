@@ -665,6 +665,7 @@ class Page_Index:
             #current_node_page.get_lock().release_read() 
 
         to_visit.extend(popped_nodes)
+        print(to_visit)
 
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
