@@ -73,8 +73,7 @@ class PageRouting(BaseStreamingANN):
 
         self.res = []
 
-
-
+        '''
         xs = X.tolist()
 
         with ThreadPoolExecutor() as executor:
@@ -83,7 +82,10 @@ class PageRouting(BaseStreamingANN):
         
         for result in results:
             self.res.append(result[0])
+        '''
 
+        for x in X:
+            self.res.append(self.index.search(x, start_node_id, k, self.index.L, self.index.max_visits)[0])
 
     def set_query_arguments(self, query_args):
         pass
