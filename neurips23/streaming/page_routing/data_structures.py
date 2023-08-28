@@ -159,7 +159,7 @@ class Page:
     def split_page(self):
         G = nx.Graph()
         self.get_lock().acquire_write()
-        
+
         node_ids = [node.get_id() for node in self.nodes]
         G.add_nodes_from(node_ids)
         for node in self.nodes:
@@ -495,12 +495,12 @@ class Page_Index:
 
         
 
-        best_page.lock.acquire_write()
+        #best_page.lock.acquire_write()
 
         #self.changed_pages[best_page.get_id()] = best_page
         best_page.add_node(new_node)
 
-        best_page.lock.release_write()
+        #best_page.lock.release_write()
 
         self.node_ids[new_node_id] = best_page.get_id()
         self.add_to_page_w_buffer(best_page)
@@ -545,11 +545,11 @@ class Page_Index:
             
             if neighbor:
                 neighbor_page = self.get_page(neighbor_page_id)
-                neighbor_page.lock.acquire_write()
+                #neighbor_page.lock.acquire_write()
                
 
                 neighbor.add_neighbor(new_node_id)
-                neighbor_page.lock.release_write()
+                #neighbor_page.lock.release_write()
                 
                     
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
