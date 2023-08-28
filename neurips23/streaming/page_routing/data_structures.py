@@ -654,9 +654,9 @@ class Page_Index:
                 heapq.heappush(to_visit, (neighbor_distance, neighbor_id))
                 print(to_visit)
 
-            if len(to_visit) > L:
-                top_L = [heapq.heappop(to_visit) for _ in range(L)]
-                to_visit = top_L
+            #if len(to_visit) > L:
+            #    top_L = [heapq.heappop(to_visit) for _ in range(L)]
+            #    to_visit = top_L
 
             #current_node_page.get_lock().release_read() 
 
