@@ -650,6 +650,7 @@ class Page_Index:
 
                 neighbor_node = self.get_node(neighbor_id)
                 neighbor_distance = neighbor_node.get_distance(query_vector)
+                print((neighbor_distance, neighbor_id))
                 heapq.heappush(to_visit, (neighbor_distance, neighbor_id))
 
             if len(to_visit) > L:
