@@ -568,10 +568,10 @@ class Page_Index:
         page_id = self.node_ids[node_id]
         page = self.get_page(page_id)
 
-        page.get_lock().acquire_write()
+        #page.get_lock().acquire_write()
         node = page.get_node_by_id(node_id)
         page.remove_node(node)
-        page.get_lock().release_write()
+        #page.get_lock().release_write()
 
         
         #self.add_to_page_buffer(page)
@@ -583,14 +583,14 @@ class Page_Index:
 
         # iterate through all the neighbors of the node and remove the node from their neighbor list
         # also add the neighbors of the node to the neighbor list of the neighbors to perserve the links: when a->delete_node and delete_node -> b, we add a->b
-        page.get_lock().acquire_read()
+        #page.get_lock().acquire_read()
         for neighbor_id in node.get_neighbor_ids():
             if neighbor_id not in self.node_ids:
                 continue
             neighbor_page_id = self.node_ids[neighbor_id]
             neighbor_page = self.get_page(neighbor_page_id)
 
-            neighbor_page.get_lock().acquire_write()
+            #neighbor_page.get_lock().acquire_write()
 
             neighbor = self.get_node(neighbor_id)
 
@@ -599,9 +599,9 @@ class Page_Index:
                 other_neighbor_ids =[other_neighbor_id for other_neighbor_id in node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
                 neighbor.add_neighbors(other_neighbor_ids)
 
-            neighbor_page.get_lock().release_write()
+            #neighbor_page.get_lock().release_write()
 
-        page.get_lock().release_read()                
+        #page.get_lock().release_read()                
                         #self.changed_pages[self.node_ids[neighbor_id]] = neighbor_page
 
      
