@@ -507,10 +507,11 @@ class Page_Index:
 
             #self.changed_pages[new_page_id] = new_page
             #self.changed_pages[best_page.get_id()] = best_page
-            with new_page.lock.acquire_write():
-                # update the node ids
-                for node in new_page.get_nodes():
-                    self.node_ids[node.get_id()] = new_page_id
+            new_page.lock.acquire_write()
+            # update the node ids
+            for node in new_page.get_nodes():
+                self.node_ids[node.get_id()] = new_page_id
+            new_page.lock.release_write()
             
             for node in best_page.get_nodes():
                 self.node_ids[node.get_id()] = best_page.get_id()
@@ -570,14 +571,16 @@ class Page_Index:
             neighbor_page_id = self.node_ids[neighbor_id]
             neighbor_page = self.get_page(neighbor_page_id)
 
-            with neighbor_page.get_lock().acquire_write():
+            neighbor_page.get_lock().acquire_write()
 
-                neighbor = self.get_node(neighbor_id)
+            neighbor = self.get_node(neighbor_id)
 
-                if node_id in neighbor.get_neighbor_ids():
-                    neighbor.remove_neighbor(node_id)
-                    other_neighbor_ids =[other_neighbor_id for other_neighbor_id in node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
-                    neighbor.add_neighbors(other_neighbor_ids)
+            if node_id in neighbor.get_neighbor_ids():
+                neighbor.remove_neighbor(node_id)
+                other_neighbor_ids =[other_neighbor_id for other_neighbor_id in node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
+                neighbor.add_neighbors(other_neighbor_ids)
+
+            neighbor_page.get_lock().release_write()
 
         page.get_lock().release_read()                
                         #self.changed_pages[self.node_ids[neighbor_id]] = neighbor_page
@@ -618,7 +621,7 @@ class Page_Index:
 
             current_node_page = self.get_page(self.node_ids[current_node_id])
 
-            current_node_page.get_lock().acquire_read()
+            #current_node_page.get_lock().acquire_read()
 
             ioed_pages = set()
 
@@ -644,7 +647,7 @@ class Page_Index:
                 top_L = [heapq.heappop(to_visit) for _ in range(L)]
                 to_visit = top_L
 
-            current_node_page.get_lock().release_read() 
+            #current_node_page.get_lock().release_read() 
 
             num_visits += 1
 
