@@ -455,9 +455,9 @@ class Page_Index:
 
     def insert_node(self, vector, new_node_id = None):
         #self.rw_lock.acquire_write()
-        w_lock = self.marker.gen_rlock()
-        w_lock.acquire()
-        print(f"insert {new_node_id}")
+        #w_lock = self.marker.gen_rlock()
+        #w_lock.acquire()
+        #print(f"insert {new_node_id}")
 
 
         if new_node_id is None:
@@ -480,7 +480,7 @@ class Page_Index:
 
             self.add_to_page_w_buffer(new_page)
             self.add_to_page_rw_buffer(new_page)
-            w_lock.release()
+            #w_lock.release()
             #print(f"released {new_node_id}")
             return
         
@@ -567,7 +567,7 @@ class Page_Index:
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
         #print("after add neighbors")
         #self.rw_lock.release_write()
-        w_lock.release()
+        #w_lock.release()
  
 
 
@@ -575,8 +575,8 @@ class Page_Index:
    
     #in some case delete_node may not delete the link pointing to the deleted node, so deleted node may still be in the neighbor list of other nodes
     def delete_node(self, node_id):
-        w_lock = self.marker.gen_wlock()
-        w_lock.acquire()
+        #w_lock = self.marker.gen_wlock()
+        #w_lock.acquire()
 
         print(f"delete {node_id}")
     
@@ -623,7 +623,7 @@ class Page_Index:
         #page.get_lock().release_read()                
                         #self.changed_pages[self.node_ids[neighbor_id]] = neighbor_page
 
-        w_lock.release()
+        #w_lock.release()
 
     def search_no_block(self, query_vector, start_node_id, k, L, max_visits):
         # This priority queue will keep track of nodes to visit
@@ -710,15 +710,15 @@ class Page_Index:
 
            
     def search(self, query_vector, start_node_id, k, L, max_visits):
-        r_lock = self.marker.gen_rlock()
-        r_lock.acquire()
+        #r_lock = self.marker.gen_rlock()
+        #r_lock.acquire()
 
-        print(f"search {query_vector}")
+        #print(f"search {query_vector}")
 
         top_k_node_ids,visited = self.search_no_block(query_vector, start_node_id, k, L, max_visits)
 
 
-        r_lock.release()
+        #r_lock.release()
 
 
         return top_k_node_ids,visited
