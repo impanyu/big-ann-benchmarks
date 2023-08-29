@@ -88,6 +88,7 @@ class Node:
     
     #TODO to be implemented
     def prune_neighbors(self):
+        start_time = time.time()
         neighbor_ids = []
         while len(self.neighbor_ids) > 0:
             distance, nearest_neighbor_id = self.find_nearest_neighbors()
@@ -114,6 +115,8 @@ class Node:
      
   
         self.neighbor_ids = neighbor_ids
+        end_time = time.time()
+        print("prune time: ", end_time - start_time)
 
     def remove_neighbor(self, neighbor_id):
         if neighbor_id in self.neighbor_ids:
