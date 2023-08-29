@@ -505,10 +505,12 @@ class Page_Index:
         
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
 
+        start_time_3 = time.time()
         new_node.add_neighbors(list(visited_node_ids))
 
         best_page = self.find_best_page(new_node)
-
+        end_time_3 = time.time()
+        print(f"find best page time: {end_time_3-start_time_3}")
         
 
         #best_page.lock.acquire_write()
@@ -519,6 +521,7 @@ class Page_Index:
         #best_page.lock.release_write()
 
         self.node_ids[new_node_id] = best_page.get_id()
+
         start_time_1 = time.time()
         self.add_to_page_w_buffer(best_page)
         self.add_to_page_rw_buffer(best_page)
