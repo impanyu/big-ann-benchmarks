@@ -495,7 +495,7 @@ class Page_Index:
         #print("inserting node")
         #print(self.node_ids)
 
-        top_k_node_ids,visited_node_ids = self.search(vector, 0, self.k, self.L, self.max_visits)
+        top_k_node_ids,visited_node_ids = self.search_no_block(vector, 0, self.k, self.L, self.max_visits)
 
         
 
@@ -518,7 +518,7 @@ class Page_Index:
         self.add_to_page_w_buffer(best_page)
         self.add_to_page_rw_buffer(best_page)
 
-        print("before split")
+    
         # split page if necessary
         if len(best_page.get_nodes()) > self.nodes_per_page:
             new_page = best_page.split_page()
@@ -547,7 +547,7 @@ class Page_Index:
             for node in best_page.get_nodes():
                 self.node_ids[node.get_id()] = best_page.get_id()
         
-        print("after split")
+ 
 
         # add the new node to the neighbor list of the neighbors
         for neighbor_id in new_node.get_neighbor_ids():
@@ -568,7 +568,7 @@ class Page_Index:
         print("after add neighbors")
         #self.rw_lock.release_write()
         w_lock.release()
-        print(f"released {new_node_id}")
+ 
 
 
 
@@ -622,13 +622,8 @@ class Page_Index:
                         #self.changed_pages[self.node_ids[neighbor_id]] = neighbor_page
 
         w_lock.release()
-           
-    def search(self, query_vector, start_node_id, k, L, max_visits):
-        r_lock = self.marker.gen_rlock()
-        r_lock.acquire()
 
-
-
+    def search_no_block(self, query_vector, start_node_id, k, L, max_visits):
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
         if len(self.node_ids) == 0:
@@ -709,6 +704,16 @@ class Page_Index:
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
+        return top_k_node_ids,visited
+
+           
+    def search(self, query_vector, start_node_id, k, L, max_visits):
+        r_lock = self.marker.gen_rlock()
+        r_lock.acquire()
+
+        top_k_node_ids,visited = self.search_no_block(query_vector, start_node_id, k, L, max_visits)
+
+
         r_lock.release()
 
 
