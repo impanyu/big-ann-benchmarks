@@ -519,8 +519,11 @@ class Page_Index:
         #best_page.lock.release_write()
 
         self.node_ids[new_node_id] = best_page.get_id()
+        start_time_1 = time.time()
         self.add_to_page_w_buffer(best_page)
         self.add_to_page_rw_buffer(best_page)
+        end_time_1 = time.time()
+        print(f"add to buffer time: {end_time_1-start_time_1}")
 
     
         # split page if necessary
@@ -552,7 +555,7 @@ class Page_Index:
                 self.node_ids[node.get_id()] = best_page.get_id()
         
  
-
+        start_time_2 = time.time()
         # add the new node to the neighbor list of the neighbors
         for neighbor_id in new_node.get_neighbor_ids():
             neighbor = self.get_node(neighbor_id)
@@ -567,13 +570,15 @@ class Page_Index:
                 neighbor.add_neighbor(new_node_id)
                 #neighbor_page.lock.release_write()
                 
-                    
+        end_time_2 = time.time()
+        print(f"add neighbors time: {end_time_2-start_time_2}")
+
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
         #print("after add neighbors")
         #self.rw_lock.release_write()
         #w_lock.release()
 
-        end_time = time.time()
+        
         print(f"insert {new_node_id} time: {end_time-start_time}")
 
 
