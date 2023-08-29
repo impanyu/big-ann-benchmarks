@@ -95,7 +95,7 @@ class PageRouting(BaseStreamingANN):
 
         
         #xs = X.tolist()
-        '''
+        
         with ThreadPoolExecutor() as executor:
             for i in range(len(X)):
                 x = X[i]
@@ -106,12 +106,12 @@ class PageRouting(BaseStreamingANN):
         for i in range(len(X)):
             result = futures[i].result()
             self.res.append(result[0])
-        '''
         
-
+        
+        '''
         for x in X:
             self.res.append(self.index.search(x, 0, k, self.index.L, self.index.max_visits)[0])
-
+        '''
     def set_query_arguments(self, query_args):
         pass
 
