@@ -53,8 +53,8 @@ class Node:
     def remove_deleted_neighbors(self):
         for i in range(len(self.neighbor_ids)-1,-1,-1):
             neighbor_id = self.neighbor_ids[i]
-            neighbor = self.page_index.get_node(neighbor_id)
-            if neighbor is None:
+            #neighbor = self.page_index.get_node(neighbor_id)
+            if neighbor_id not in self.page_index.node_ids:
                 self.neighbor_ids.remove(neighbor_id)
 
     def add_neighbor(self, new_neighbor_id):
