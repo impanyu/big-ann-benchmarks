@@ -668,7 +668,7 @@ class Page_Index:
 
             popped_nodes.append((distance,current_node_id))
 
-            current_node_page = self.get_page(self.node_ids[current_node_id])
+            #current_node_page = self.get_page(self.node_ids[current_node_id])
 
             #current_node_page.get_lock().acquire_read()
 
@@ -678,7 +678,7 @@ class Page_Index:
             neighbor_ids = current_node.get_neighbor_ids()
 
             for neighbor_id in neighbor_ids:
-                if neighbor_id in visited:
+                if neighbor_id not in visited:
                     continue
                 if neighbor_id not in self.node_ids:
                     continue
