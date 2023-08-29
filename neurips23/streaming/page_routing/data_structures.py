@@ -238,10 +238,9 @@ class Page_Index:
 
         self.index_file_rw_lock = ReadWriteLock()
 
-        marker = rwlock.RWLockFair()
+        self.marker = rwlock.RWLockFair()
 
-        self.r_lock = marker.gen_rlock()
-        self.w_lock = marker.gen_wlock()
+       
 
         #self.changed_pages = {}
 
@@ -456,7 +455,8 @@ class Page_Index:
 
     def insert_node(self, vector, new_node_id = None):
         #self.rw_lock.acquire_write()
-        self.r_lock.acquire()
+        w_lock = self.marker.gen_wlock()
+        w_lock.acquire()
 
         if new_node_id is None:
             new_node_id = self.get_aviailable_node_id()
@@ -478,7 +478,7 @@ class Page_Index:
 
             self.add_to_page_w_buffer(new_page)
             self.add_to_page_rw_buffer(new_page)
-            self.r_lock.release()
+            w_lock.release()
             return
         
         # check if node already exists
@@ -564,14 +564,15 @@ class Page_Index:
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
 
         #self.rw_lock.release_write()
-        self.r_lock.release()
+        w_lock.release()
 
 
 
    
     #in some case delete_node may not delete the link pointing to the deleted node, so deleted node may still be in the neighbor list of other nodes
     def delete_node(self, node_id):
-        self.w_lock.acquire()
+        w_lock = self.marker.gen_wlock()
+        w_lock.acquire()
     
         #print("deleting node")
         if node_id not in self.node_ids:
@@ -616,10 +617,11 @@ class Page_Index:
         #page.get_lock().release_read()                
                         #self.changed_pages[self.node_ids[neighbor_id]] = neighbor_page
 
-        self.w_lock.release()
+        w_lock.release()
            
     def search(self, query_vector, start_node_id, k, L, max_visits):
-        self.r_lock.acquire()
+        r_lock = self.marker.gen_rlock()
+        r_lock.acquire()
 
 
 
@@ -703,7 +705,7 @@ class Page_Index:
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
-        self.r_lock.release()
+        r_lock.release()
 
 
         return top_k_node_ids,visited
