@@ -114,7 +114,7 @@ class Node:
                 distance_2 = self.get_distance(neighbor.get_vector())
 
                 if self.alpha * distance_1 < distance_2:
-                    self.neighbor_ids.remove(neighbor_id)
+                    self.neighbor_ids.pop(i)
      
   
         self.neighbor_ids = neighbor_ids
@@ -141,7 +141,8 @@ class Node:
         #print(len(self.vector))
         #print(len(other_vector))
         
-        return np.sum(np.square(np.array(self.vector) - np.array(other_vector)))#np.linalg.norm(np.array(self.vector) - np.array(other_vector))
+        return np.sum(np.square(np.array(self.vector) - np.array(other_vector)))
+        #np.linalg.norm(np.array(self.vector) - np.array(other_vector))
     
 
 class Page:
