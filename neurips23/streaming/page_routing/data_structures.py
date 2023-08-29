@@ -94,6 +94,7 @@ class Node:
             distance, nearest_neighbor_id = self.find_nearest_neighbors()
             if nearest_neighbor_id is None:
                 break
+            
 
             nearest_neighbor = self.page_index.get_node(nearest_neighbor_id)
             neighbor_ids.append(nearest_neighbor_id)
