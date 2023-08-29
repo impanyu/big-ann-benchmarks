@@ -456,7 +456,7 @@ class Page_Index:
 
     def insert_node(self, vector, new_node_id = None):
         #self.rw_lock.acquire_write()
-        self.w_lock.acquire()
+        #self.w_lock.acquire()
 
         if new_node_id is None:
             new_node_id = self.get_aviailable_node_id()
@@ -563,7 +563,7 @@ class Page_Index:
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
 
         #self.rw_lock.release_write()
-        self.w_lock.release()
+        #self.w_lock.release()
 
 
 
