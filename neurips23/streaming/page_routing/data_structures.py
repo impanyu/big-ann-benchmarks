@@ -461,6 +461,7 @@ class Page_Index:
         #w_lock = self.marker.gen_rlock()
         #w_lock.acquire()
         #print(f"insert {new_node_id}")
+        start_time = time.time()
 
 
         if new_node_id is None:
@@ -571,7 +572,9 @@ class Page_Index:
         #print("after add neighbors")
         #self.rw_lock.release_write()
         #w_lock.release()
- 
+
+        end_time = time.time()
+        print(f"insert {new_node_id} time: {end_time-start_time}")
 
 
 
