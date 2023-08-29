@@ -71,11 +71,17 @@ class PageRouting(BaseStreamingANN):
         Implement this for your algorithm
         delete the vectors labelled with ids.
         '''
+        '''
         with ThreadPoolExecutor(max_workers=self.delete_threads) as executor:
             # Submit tasks to the executor
             for id in ids:
 
                 executor.submit(self.index.delete_node, id)
+
+        '''
+        for id in ids:
+            self.index.delete_node(id)
+
 
         '''
         threads = []
@@ -101,7 +107,7 @@ class PageRouting(BaseStreamingANN):
 
         
         #xs = X.tolist()
-        
+        '''
         with ThreadPoolExecutor() as executor:
             for i in range(len(X)):
                 x = X[i]
@@ -113,11 +119,11 @@ class PageRouting(BaseStreamingANN):
             result = futures[i].result()
             self.res.append(result[0])
         
-        
         '''
+        
         for x in X:
             self.res.append(self.index.search(x, 0, k, self.index.L, self.index.max_visits)[0])
-        '''
+        
     def set_query_arguments(self, query_args):
         pass
 
