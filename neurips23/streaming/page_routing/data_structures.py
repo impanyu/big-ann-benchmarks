@@ -481,7 +481,7 @@ class Page_Index:
             self.add_to_page_w_buffer(new_page)
             self.add_to_page_rw_buffer(new_page)
             w_lock.release()
-            print(f"released {new_node_id}")
+            #print(f"released {new_node_id}")
             return
         
         # check if node already exists
