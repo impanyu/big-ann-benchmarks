@@ -328,13 +328,13 @@ class Page_Index:
         for neighbor_id in node.get_neighbor_ids():
             
             neighbor = self.get_node(neighbor_id)
-            if not neighbor:
-                node.remove_neighbor(neighbor_id)
+            if not neighbor_id in self.node_ids:
                 continue
             neighbor_page_id = self.node_ids[neighbor_id]
             page_co_located_counts[neighbor_page_id] = page_co_located_counts.get(neighbor_page_id, 0) + 1
-            if node.get_id() in neighbor.get_neighbor_ids():
-                page_co_located_counts[neighbor_page_id] = page_co_located_counts.get(neighbor_page_id, 0) + 1
+
+            #if node.get_id() in neighbor.get_neighbor_ids():
+            #    page_co_located_counts[neighbor_page_id] = page_co_located_counts.get(neighbor_page_id, 0) + 1
         
         max_page_co_located_count = 0
         for page_id in page_co_located_counts.keys():
