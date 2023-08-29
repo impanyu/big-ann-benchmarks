@@ -5,6 +5,7 @@ import networkx as nx
 import random
 import os
 import threading
+from readerwriterlock import rwlock
 
 class ReadWriteLock:
     def __init__(self):
@@ -237,7 +238,10 @@ class Page_Index:
 
         self.index_file_rw_lock = ReadWriteLock()
 
-        self.rw_lock = ReadWriteLock()
+        marker = rwlock.RWLockFair()
+
+        self.r_lock = marker.gen_rlock()
+        self.w_lock = marker.gen_wlock()
 
         #self.changed_pages = {}
 
@@ -452,6 +456,7 @@ class Page_Index:
 
     def insert_node(self, vector, new_node_id = None):
         #self.rw_lock.acquire_write()
+        self.w_lock.acquire()
 
         if new_node_id is None:
             new_node_id = self.get_aviailable_node_id()
@@ -558,14 +563,14 @@ class Page_Index:
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
 
         #self.rw_lock.release_write()
-
+        self.w_lock.release()
 
 
 
    
     #in some case delete_node may not delete the link pointing to the deleted node, so deleted node may still be in the neighbor list of other nodes
     def delete_node(self, node_id):
-        self.rw_lock.acquire_write()
+    
         #print("deleting node")
         if node_id not in self.node_ids:
             return 
@@ -608,10 +613,10 @@ class Page_Index:
         #page.get_lock().release_read()                
                         #self.changed_pages[self.node_ids[neighbor_id]] = neighbor_page
 
-        self.rw_lock.release_write()
+        
            
     def search(self, query_vector, start_node_id, k, L, max_visits):
-        self.rw_lock.acquire_read()
+
 
 
         # This priority queue will keep track of nodes to visit
@@ -694,7 +699,7 @@ class Page_Index:
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
         
-        self.rw_lock.release_read()
+
 
         return top_k_node_ids,visited
 
