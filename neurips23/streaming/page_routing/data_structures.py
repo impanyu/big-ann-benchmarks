@@ -560,7 +560,7 @@ class Page_Index:
             
             
             if neighbor:
-                neighbor_page = self.get_page(neighbor_page_id)
+                #neighbor_page = self.get_page(neighbor_page_id)
                 #neighbor_page.lock.acquire_write()
                
 
