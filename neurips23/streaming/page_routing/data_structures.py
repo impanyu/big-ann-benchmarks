@@ -327,7 +327,7 @@ class Page_Index:
         page_co_located_counts = {}
         for neighbor_id in node.get_neighbor_ids():
             
-            neighbor = self.get_node(neighbor_id)
+            #neighbor = self.get_node(neighbor_id)
             if not neighbor_id in self.node_ids:
                 continue
             neighbor_page_id = self.node_ids[neighbor_id]
