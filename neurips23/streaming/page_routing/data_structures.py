@@ -672,7 +672,7 @@ class Page_Index:
 
             #current_node_page.get_lock().acquire_read()
 
-            ioed_pages = set()
+            #ioed_pages = set()
 
             # Add neighbors to the to_visit queue
             neighbor_ids = current_node.get_neighbor_ids()
