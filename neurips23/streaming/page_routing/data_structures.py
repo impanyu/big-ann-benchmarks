@@ -210,7 +210,7 @@ class Page:
 
 
 class Page_Index:
-    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=50, page_buffer_size=100, max_ios_per_hop = 3):
+    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3):
         self.k = k
         self.L = L
         self.max_visits = max_visits
@@ -455,7 +455,7 @@ class Page_Index:
 
     def insert_node(self, vector, new_node_id = None):
         #self.rw_lock.acquire_write()
-        w_lock = self.marker.gen_wlock()
+        w_lock = self.marker.gen_rlock()
         w_lock.acquire()
         print(f"insert {new_node_id}")
 
