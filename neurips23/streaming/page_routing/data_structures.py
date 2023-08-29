@@ -455,9 +455,10 @@ class Page_Index:
 
     def insert_node(self, vector, new_node_id = None):
         #self.rw_lock.acquire_write()
-        w_lock = self.marker.gen_rlock()
+        w_lock = self.marker.gen_wlock()
         w_lock.acquire()
-        
+        print(new_node_id)
+
 
         if new_node_id is None:
             new_node_id = self.get_aviailable_node_id()
