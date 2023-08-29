@@ -456,7 +456,7 @@ class Page_Index:
 
     def insert_node(self, vector, new_node_id = None):
         #self.rw_lock.acquire_write()
-        #self.w_lock.acquire()
+        self.w_lock.acquire()
 
         if new_node_id is None:
             new_node_id = self.get_aviailable_node_id()
@@ -478,6 +478,7 @@ class Page_Index:
 
             self.add_to_page_w_buffer(new_page)
             self.add_to_page_rw_buffer(new_page)
+            self.w_lock.release()
             return
         
         # check if node already exists
@@ -563,16 +564,18 @@ class Page_Index:
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
 
         #self.rw_lock.release_write()
-        #self.w_lock.release()
+        self.w_lock.release()
 
 
 
    
     #in some case delete_node may not delete the link pointing to the deleted node, so deleted node may still be in the neighbor list of other nodes
     def delete_node(self, node_id):
+        self.w_lock.acquire()
     
         #print("deleting node")
         if node_id not in self.node_ids:
+            self.w_lock.release()
             return 
         page_id = self.node_ids[node_id]
         page = self.get_page(page_id)
@@ -613,7 +616,7 @@ class Page_Index:
         #page.get_lock().release_read()                
                         #self.changed_pages[self.node_ids[neighbor_id]] = neighbor_page
 
-        
+        self.w_lock.release()
            
     def search(self, query_vector, start_node_id, k, L, max_visits):
         self.r_lock.acquire()
@@ -623,6 +626,7 @@ class Page_Index:
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
         if len(self.node_ids) == 0:
+            self.r_lock.release()
             return [],set()
 
         rand_idx = random.randint(0,len(self.node_ids)-1)
