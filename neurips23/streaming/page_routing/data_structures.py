@@ -518,7 +518,7 @@ class Page_Index:
         self.add_to_page_w_buffer(best_page)
         self.add_to_page_rw_buffer(best_page)
 
-
+        print("before split")
         # split page if necessary
         if len(best_page.get_nodes()) > self.nodes_per_page:
             new_page = best_page.split_page()
@@ -547,7 +547,7 @@ class Page_Index:
             for node in best_page.get_nodes():
                 self.node_ids[node.get_id()] = best_page.get_id()
         
-        
+        print("after split")
 
         # add the new node to the neighbor list of the neighbors
         for neighbor_id in new_node.get_neighbor_ids():
@@ -565,7 +565,7 @@ class Page_Index:
                 
                     
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
-
+        print("after add neighbors")
         #self.rw_lock.release_write()
         w_lock.release()
         print(f"released {new_node_id}")
