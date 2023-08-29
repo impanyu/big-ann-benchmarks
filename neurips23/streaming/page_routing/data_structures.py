@@ -577,7 +577,7 @@ class Page_Index:
         #print("after add neighbors")
         #self.rw_lock.release_write()
         #w_lock.release()
-
+        end_time = time.time()
         
         print(f"insert {new_node_id} time: {end_time-start_time}")
 
