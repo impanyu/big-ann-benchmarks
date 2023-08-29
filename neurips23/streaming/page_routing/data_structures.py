@@ -141,7 +141,7 @@ class Node:
         #print(len(self.vector))
         #print(len(other_vector))
         
-        return np.linalg.norm(np.array(self.vector) - np.array(other_vector))
+        return np.sum(np.square(np.array(self.vector) - np.array(other_vector)))#np.linalg.norm(np.array(self.vector) - np.array(other_vector))
     
 
 class Page:
