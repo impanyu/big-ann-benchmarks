@@ -457,7 +457,7 @@ class Page_Index:
         #self.rw_lock.acquire_write()
         w_lock = self.marker.gen_wlock()
         w_lock.acquire()
-        print(new_node_id)
+        #print(new_node_id)
 
 
         if new_node_id is None:
@@ -565,7 +565,7 @@ class Page_Index:
                 
                     
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
-        print("after add neighbors")
+        #print("after add neighbors")
         #self.rw_lock.release_write()
         w_lock.release()
  
