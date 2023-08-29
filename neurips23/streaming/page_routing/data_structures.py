@@ -616,6 +616,7 @@ class Page_Index:
         
            
     def search(self, query_vector, start_node_id, k, L, max_visits):
+        self.r_lock.acquire()
 
 
 
@@ -698,7 +699,7 @@ class Page_Index:
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
-        
+        self.r_lock.release()
 
 
         return top_k_node_ids,visited
