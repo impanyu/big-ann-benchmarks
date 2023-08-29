@@ -175,9 +175,9 @@ class Page:
 
         nodes_1 = [node for node in self.nodes if node.get_id() in part1]
         nodes_2 = [node for node in self.nodes if node.get_id() in part2]
-        print(node_ids)
-        print(part1)
-        print(part2)
+        #print(node_ids)
+        #print(part1)
+        #print(part2)
         
         self.nodes = nodes_1
         #self.get_lock().release_write()
