@@ -490,6 +490,7 @@ class Page_Index:
         if new_node_id in self.node_ids:
             new_node = self.get_node(new_node_id)
             new_node.set_vector(vector)
+            return
         
         
    
