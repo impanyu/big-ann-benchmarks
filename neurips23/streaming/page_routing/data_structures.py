@@ -6,6 +6,7 @@ import random
 import os
 import threading
 from readerwriterlock import rwlock
+import time
 
 class ReadWriteLock:
     def __init__(self):
@@ -498,10 +499,9 @@ class Page_Index:
         #print("inserting node")
         #print(self.node_ids)
 
-        top_k_node_ids,visited_node_ids = self.search_no_block(vector, 0, self.k, self.L, self.max_visits)
-
         
-
+        top_k_node_ids,visited_node_ids = self.search_no_block(vector, 0, self.k, self.L, self.max_visits)
+        
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
 
         new_node.add_neighbors(list(visited_node_ids))
@@ -629,6 +629,7 @@ class Page_Index:
         #w_lock.release()
 
     def search_no_block(self, query_vector, start_node_id, k, L, max_visits):
+        start_time = time.time()
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
         if len(self.node_ids) == 0:
@@ -709,6 +710,9 @@ class Page_Index:
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
+
+        end_time = time.time()
+        print("search time: ", end_time - start_time)
         return top_k_node_ids,visited
 
            
