@@ -71,7 +71,7 @@ class Node:
             self.prune_neighbors()
 
     def find_nearest_neighbors(self):
-
+        start_time = time.time()
         priority_queue = []
         heapq.heapify(priority_queue)
         for neighbor_id in self.neighbor_ids:
@@ -84,6 +84,8 @@ class Node:
         if len(priority_queue) == 0:
             return None, None
         distance, nearest_neighbor_id = heapq.heappop(priority_queue)
+        end_time = time.time()
+        print("find nearest neighbors time: ", end_time - start_time)
         return distance,nearest_neighbor_id
     
     #TODO to be implemented
@@ -94,7 +96,7 @@ class Node:
             distance, nearest_neighbor_id = self.find_nearest_neighbors()
             if nearest_neighbor_id is None:
                 break
-            
+
 
             nearest_neighbor = self.page_index.get_node(nearest_neighbor_id)
             neighbor_ids.append(nearest_neighbor_id)
