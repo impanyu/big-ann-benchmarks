@@ -457,7 +457,7 @@ class Page_Index:
         #self.rw_lock.acquire_write()
         w_lock = self.marker.gen_wlock()
         w_lock.acquire()
-        print(new_node_id)
+        print(f"insert {new_node_id}")
 
 
         if new_node_id is None:
@@ -577,6 +577,8 @@ class Page_Index:
     def delete_node(self, node_id):
         w_lock = self.marker.gen_wlock()
         w_lock.acquire()
+
+        print(f"delete {node_id}")
     
         #print("deleting node")
         if node_id not in self.node_ids:
@@ -710,6 +712,8 @@ class Page_Index:
     def search(self, query_vector, start_node_id, k, L, max_visits):
         r_lock = self.marker.gen_rlock()
         r_lock.acquire()
+
+        print(f"search {query_vector}")
 
         top_k_node_ids,visited = self.search_no_block(query_vector, start_node_id, k, L, max_visits)
 
