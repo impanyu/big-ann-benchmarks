@@ -324,6 +324,7 @@ class Page_Index:
 
     #find best page to insert the node
     def find_best_page(self, node):
+        start_time_1 = time.time()
         page_co_located_counts = {}
         for neighbor_id in node.get_neighbor_ids():
             
@@ -335,14 +336,19 @@ class Page_Index:
 
             #if node.get_id() in neighbor.get_neighbor_ids():
             #    page_co_located_counts[neighbor_page_id] = page_co_located_counts.get(neighbor_page_id, 0) + 1
-        
+        end_time_1 = time.time()
+        print(f"find_best_page 1 took {end_time_1-start_time_1}s")
+
+        start_time_2 = time.time()
         max_page_co_located_count = 0
         for page_id in page_co_located_counts.keys():
             page_co_located_count = page_co_located_counts[page_id]
             if page_co_located_count > max_page_co_located_count:
                 max_page_co_located_count = page_co_located_count
                 best_page_id = page_id
-        
+        end_time_2 = time.time()
+        print(f"find_best_page 2 took {end_time_2-start_time_2}s")
+
         return self.get_page(best_page_id)
                 
             
