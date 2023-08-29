@@ -26,7 +26,7 @@ class PageRouting(BaseStreamingANN):
         index_file = "index.bin"
         meta_data_file = "meta_data.json"
 
-        self.index = Page_Index(ndims, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=100, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
+        self.index = Page_Index(ndims, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=10, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
 
       
 
