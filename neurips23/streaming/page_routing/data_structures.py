@@ -457,6 +457,7 @@ class Page_Index:
         #self.rw_lock.acquire_write()
         w_lock = self.marker.gen_rlock()
         w_lock.acquire()
+        
 
         if new_node_id is None:
             new_node_id = self.get_aviailable_node_id()
