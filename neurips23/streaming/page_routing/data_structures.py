@@ -347,9 +347,11 @@ class Page_Index:
                 max_page_co_located_count = page_co_located_count
                 best_page_id = page_id
         end_time_2 = time.time()
+        best_page = self.get_page(best_page_id)
         print(f"find_best_page 2 took {end_time_2-start_time_2}s")
 
-        return self.get_page(best_page_id)
+        
+        return best_page
                 
             
     def merge_pages(self, page1, page2):
