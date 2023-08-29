@@ -678,14 +678,14 @@ class Page_Index:
             neighbor_ids = current_node.get_neighbor_ids()
 
             for neighbor_id in neighbor_ids:
-                if neighbor_id not in visited:
+                if neighbor_id in visited:
                     continue
                 if neighbor_id not in self.node_ids:
                     continue
-                neighbor_page_id = self.node_ids[neighbor_id]
-                ioed_pages.add(neighbor_page_id)
-                if len(ioed_pages) > self.max_ios_per_hop:
-                    break
+                #neighbor_page_id = self.node_ids[neighbor_id]
+                #ioed_pages.add(neighbor_page_id)
+                #if len(ioed_pages) > self.max_ios_per_hop:
+                    #break
 
                 neighbor_node = self.get_node(neighbor_id)
                 neighbor_distance = neighbor_node.get_distance(query_vector)
