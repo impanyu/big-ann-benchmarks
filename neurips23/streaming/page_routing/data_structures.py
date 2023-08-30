@@ -688,8 +688,10 @@ class Page_Index:
                     continue
                 else:
                     break
-                
+
             if len(to_visit) ==0:
+                to_visit.extend(popped_nodes)
+                heapq.heapify(to_visit)
                 break
 
             to_visit.extend(popped_nodes)
