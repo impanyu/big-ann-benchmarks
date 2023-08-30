@@ -611,7 +611,7 @@ class Page_Index:
     
         #print("deleting node")
         if node_id not in self.node_ids:
-            self.w_lock.release()
+            #self.w_lock.release()
             return 
         page_id = self.node_ids[node_id]
         page = self.get_page(page_id)
@@ -672,23 +672,36 @@ class Page_Index:
         heapq.heapify(to_visit)
         visited = set() # Keep track of visited nodes
 
-        popped_nodes = []
+        
 
 
         num_visits = 0
 
-        while to_visit and num_visits < max_visits:
-            distance, current_node_id = heapq.heappop(to_visit)
+        while num_visits < max_visits:
+
+            popped_nodes = []
+            while len(to_visit) >0:
+                distance, current_node_id = heapq.heappop(to_visit)
+                popped_nodes.append((distance,current_node_id))
             
-            # If we've already visited this node, continue
-            if current_node_id in visited:
-                continue
+                # If we've already visited this node, continue
+                if current_node_id in visited:
+                    continue
+                else:
+                    break
+
+            to_visit.extend(popped_nodes)
+            heapq.heapify(to_visit)
+
+            if len(to_visit) ==0:
+                break
 
             # Mark this node as visited
             visited.add(current_node_id)
-            
 
-            if current_node_id not in self.node_ids:
+            current_page_id = self.node_ids[current_node_id]
+            
+            if current_page_id not in self.page_buffer:
                 # need to load a new page, increase the number of io
                 num_visits += 1
 
@@ -697,7 +710,7 @@ class Page_Index:
             if current_node is None:
                 continue
 
-            popped_nodes.append((distance,current_node_id))
+            
 
             #current_node_page = self.get_page(self.node_ids[current_node_id])
 
@@ -718,9 +731,7 @@ class Page_Index:
                 #if len(ioed_pages) > self.max_ios_per_hop:
                     #break
 
-                if neighbor_id not in self.node_ids:
-                # need to load a new page, increase the number of io
-                    num_visits += 1
+                
 
                 neighbor_node = self.get_node(neighbor_id)
                 neighbor_distance = neighbor_node.get_distance(query_vector)
@@ -733,10 +744,9 @@ class Page_Index:
                 to_visit = top_L
 
             #current_node_page.get_lock().release_read() 
-        print(len(visited))
-        print(f"visites {num_visits}")
-        to_visit.extend(popped_nodes)
-        heapq.heapify(to_visit)
+        
+        
+        
         #print(to_visit)
 
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
