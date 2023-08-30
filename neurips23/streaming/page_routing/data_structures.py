@@ -648,7 +648,7 @@ class Page_Index:
                 neighbor.add_neighbors(other_neighbor_ids)
 
             #neighbor_page.get_lock().release_write()
-
+        
         #page.get_lock().release_read()                
                         #self.changed_pages[self.node_ids[neighbor_id]] = neighbor_page
 
@@ -686,6 +686,7 @@ class Page_Index:
 
             # Mark this node as visited
             visited.add(current_node_id)
+            
 
             if current_node_id not in self.node_ids:
                 # need to load a new page, increase the number of io
@@ -732,7 +733,7 @@ class Page_Index:
                 to_visit = top_L
 
             #current_node_page.get_lock().release_read() 
-
+        print(len(visited))
         to_visit.extend(popped_nodes)
         heapq.heapify(to_visit)
         #print(to_visit)
