@@ -734,6 +734,7 @@ class Page_Index:
 
             #current_node_page.get_lock().release_read() 
         print(len(visited))
+        print(f"visites {num_visits}")
         to_visit.extend(popped_nodes)
         heapq.heapify(to_visit)
         #print(to_visit)
