@@ -679,6 +679,7 @@ class Page_Index:
         while num_visits < max_visits:
             
             popped_nodes = []
+            find_nearest_node = False
             while len(to_visit) >0:
                 distance, current_node_id = heapq.heappop(to_visit)
                 popped_nodes.append((distance,current_node_id))
@@ -687,9 +688,10 @@ class Page_Index:
                 if current_node_id in visited:
                     continue
                 else:
+                    find_nearest_node = True
                     break
 
-            if len(to_visit) ==0:
+            if not find_nearest_node:
                 to_visit.extend(popped_nodes)
                 heapq.heapify(to_visit)
                 break
