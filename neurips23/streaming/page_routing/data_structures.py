@@ -85,10 +85,10 @@ class Node:
             return None, None
         distance, nearest_neighbor_id = heapq.heappop(priority_queue)
         end_time = time.time()
-        print("find nearest neighbors time: ", end_time - start_time)
+        #print("find nearest neighbors time: ", end_time - start_time)
         return distance,nearest_neighbor_id
     
-    #TODO to be implemented
+    #
     def prune_neighbors(self):
         start_time = time.time()
         neighbor_ids = []
@@ -119,7 +119,7 @@ class Node:
   
         self.neighbor_ids = neighbor_ids
         end_time = time.time()
-        print("prune time: ", end_time - start_time)
+        #print("prune time: ", end_time - start_time)
 
     def remove_neighbor(self, neighbor_id):
         if neighbor_id in self.neighbor_ids:
@@ -344,7 +344,7 @@ class Page_Index:
             #if node.get_id() in neighbor.get_neighbor_ids():
             #    page_co_located_counts[neighbor_page_id] = page_co_located_counts.get(neighbor_page_id, 0) + 1
         end_time_1 = time.time()
-        print(f"find_best_page 1 took {end_time_1-start_time_1}s")
+        #print(f"find_best_page 1 took {end_time_1-start_time_1}s")
 
         start_time_2 = time.time()
         max_page_co_located_count = 0
@@ -356,7 +356,7 @@ class Page_Index:
                 best_page_id = page_id
         end_time_2 = time.time()
         best_page = self.get_page(best_page_id)
-        print(f"find_best_page 2 took {end_time_2-start_time_2}s")
+        #print(f"find_best_page 2 took {end_time_2-start_time_2}s")
 
         
         return best_page
@@ -526,7 +526,7 @@ class Page_Index:
 
         best_page = self.find_best_page(new_node)
         end_time_3 = time.time()
-        print(f"find best page time: {end_time_3-start_time_3}")
+        #print(f"find best page time: {end_time_3-start_time_3}")
         
 
         #best_page.lock.acquire_write()
@@ -542,7 +542,7 @@ class Page_Index:
         self.add_to_page_w_buffer(best_page)
         self.add_to_page_rw_buffer(best_page)
         end_time_1 = time.time()
-        print(f"add to buffer time: {end_time_1-start_time_1}")
+        #print(f"add to buffer time: {end_time_1-start_time_1}")
 
     
         # split page if necessary
@@ -590,7 +590,7 @@ class Page_Index:
                 #neighbor_page.lock.release_write()
                 
         end_time_2 = time.time()
-        print(f"add neighbors time: {end_time_2-start_time_2}")
+        #print(f"add neighbors time: {end_time_2-start_time_2}")
 
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
         #print("after add neighbors")
@@ -748,8 +748,7 @@ class Page_Index:
 
             #current_node_page.get_lock().release_read() 
         
-        
-        
+
         #print(to_visit)
 
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
