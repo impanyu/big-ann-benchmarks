@@ -677,7 +677,7 @@ class Page_Index:
         num_visits = 0
 
         while num_visits < max_visits:
-            print(to_visit)
+            
             popped_nodes = []
             while len(to_visit) >0:
                 distance, current_node_id = heapq.heappop(to_visit)
@@ -688,12 +688,14 @@ class Page_Index:
                     continue
                 else:
                     break
+                
+            if len(to_visit) ==0:
+                break
 
             to_visit.extend(popped_nodes)
             heapq.heapify(to_visit)
 
-            if len(to_visit) ==0:
-                break
+            
 
             # Mark this node as visited
             visited.add(current_node_id)
