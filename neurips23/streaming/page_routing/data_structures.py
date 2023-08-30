@@ -348,6 +348,7 @@ class Page_Index:
 
         start_time_2 = time.time()
         max_page_co_located_count = 0
+        best_page_id = 0
         for page_id in page_co_located_counts.keys():
             page_co_located_count = page_co_located_counts[page_id]
             if page_co_located_count > max_page_co_located_count:
@@ -636,7 +637,7 @@ class Page_Index:
             if neighbor_id not in self.node_ids:
                 continue
             neighbor_page_id = self.node_ids[neighbor_id]
-            neighbor_page = self.get_page(neighbor_page_id)
+            #neighbor_page = self.get_page(neighbor_page_id)
 
             #neighbor_page.get_lock().acquire_write()
 
@@ -659,7 +660,7 @@ class Page_Index:
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
         if len(self.node_ids) == 0:
-            self.r_lock.release()
+            #self.r_lock.release()
             return [],set()
 
         rand_idx = random.randint(0,len(self.node_ids)-1)
@@ -671,8 +672,6 @@ class Page_Index:
 
         heapq.heapify(to_visit)
         visited = set() # Keep track of visited nodes
-
-        
 
 
         num_visits = 0
