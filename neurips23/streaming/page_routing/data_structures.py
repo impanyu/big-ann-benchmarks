@@ -757,6 +757,7 @@ class Page_Index:
 
         end_time = time.time()
         #print("search time: ", end_time - start_time)
+        print(len(visited))
         return top_k_node_ids,visited
 
            
