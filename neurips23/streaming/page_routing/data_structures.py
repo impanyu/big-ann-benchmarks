@@ -598,7 +598,7 @@ class Page_Index:
         #w_lock.release()
         end_time = time.time()
         
-        print(f"insert {new_node_id} time: {end_time-start_time}")
+        #print(f"insert {new_node_id} time: {end_time-start_time}")
 
 
 
@@ -608,7 +608,7 @@ class Page_Index:
         #w_lock = self.marker.gen_wlock()
         #w_lock.acquire()
 
-        print(f"delete {node_id}")
+        #print(f"delete {node_id}")
     
         #print("deleting node")
         if node_id not in self.node_ids:
@@ -756,7 +756,7 @@ class Page_Index:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
 
         end_time = time.time()
-        print("search time: ", end_time - start_time)
+        #print("search time: ", end_time - start_time)
         return top_k_node_ids,visited
 
            
