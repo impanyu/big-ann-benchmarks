@@ -608,7 +608,7 @@ class Page_Index:
         #w_lock = self.marker.gen_wlock()
         #w_lock.acquire()
 
-        #print(f"delete {node_id}")
+        print(f"delete {node_id}")
     
         #print("deleting node")
         if node_id not in self.node_ids:
