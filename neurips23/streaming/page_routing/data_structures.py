@@ -578,7 +578,7 @@ class Page_Index:
         # add the new node to the neighbor list of the neighbors
         for neighbor_id in new_node.get_neighbor_ids():
             neighbor = self.get_node(neighbor_id)
-            neighbor_page_id = self.node_ids[neighbor_id]
+            #neighbor_page_id = self.node_ids[neighbor_id]
             
             
             if neighbor:
@@ -598,7 +598,7 @@ class Page_Index:
         #w_lock.release()
         end_time = time.time()
         
-        #print(f"insert {new_node_id} time: {end_time-start_time}")
+        print(f"insert {new_node_id} time: {end_time-start_time}")
 
 
 
@@ -758,7 +758,7 @@ class Page_Index:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
 
         end_time = time.time()
-        #print("search time: ", end_time - start_time)
+        print("search time: ", end_time - start_time)
         #print(len(visited))
         return top_k_node_ids,visited
 
