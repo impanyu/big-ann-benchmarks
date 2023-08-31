@@ -767,7 +767,7 @@ class Page_Index:
         #r_lock = self.marker.gen_rlock()
         #r_lock.acquire()
 
-        #print(f"search {query_vector}")
+        print(f"search {query_vector}")
 
         top_k_node_ids,visited = self.search_no_block(query_vector, start_node_id, k, L, max_visits)
 
