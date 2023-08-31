@@ -659,7 +659,7 @@ class Page_Index:
         start_time = time.time()
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
-        if len(self.node_ids) == 0:
+        if True: #len(self.node_ids) == 0:
             #self.r_lock.release()
             return [],set()
 
