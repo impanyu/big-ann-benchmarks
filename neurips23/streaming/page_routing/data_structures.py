@@ -659,9 +659,11 @@ class Page_Index:
         start_time = time.time()
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
-        if True: #len(self.node_ids) == 0:
-            #self.r_lock.release()
+        if len(self.node_ids) == 0:
+            self.r_lock.release()
             return [],set()
+        
+
 
         rand_idx = random.randint(0,len(self.node_ids)-1)
         start_node_id = list(self.node_ids.keys())[rand_idx]
@@ -673,7 +675,12 @@ class Page_Index:
         heapq.heapify(to_visit)
         visited = set() # Keep track of visited nodes
 
+        top_k_node_ids = []
+        if len(top_k_node_ids) < k:
+            top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
 
+        return top_k_node_ids,visited
+    
         num_visits = 0
 
         while num_visits < max_visits:
