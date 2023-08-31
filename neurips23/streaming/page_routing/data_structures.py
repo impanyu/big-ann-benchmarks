@@ -476,7 +476,7 @@ class Page_Index:
         #self.rw_lock.acquire_write()
         #w_lock = self.marker.gen_rlock()
         #w_lock.acquire()
-        #print(f"insert {new_node_id}")
+        print(f"insert {new_node_id}")
         start_time = time.time()
 
 
