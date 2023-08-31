@@ -661,7 +661,7 @@ class Page_Index:
         # Format is (distance, node)
         if True: #len(self.node_ids) == 0:
             #self.r_lock.release()
-            return [],set()
+            return [0],set(0)
 
         rand_idx = random.randint(0,len(self.node_ids)-1)
         start_node_id = list(self.node_ids.keys())[rand_idx]
