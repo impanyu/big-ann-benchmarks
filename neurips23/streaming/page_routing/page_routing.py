@@ -22,11 +22,11 @@ class PageRouting(BaseStreamingANN):
         ndims is the size of the dataset
         '''
         #raise NotImplementedError
-        max_neighbors = 10
+        max_neighbors = 20
         index_file = "index.bin"
         meta_data_file = "meta_data.json"
 
-        self.index = Page_Index(ndims, max_neighbors, index_file, meta_data_file, k=5, L=20, max_visits=10, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
+        self.index = Page_Index(ndims, max_neighbors, index_file, meta_data_file, k=1, L=20, max_visits=10, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
 
       
 
