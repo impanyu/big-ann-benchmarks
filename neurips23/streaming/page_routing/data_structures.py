@@ -517,7 +517,7 @@ class Page_Index:
         #print(self.node_ids)
 
         
-        top_k_node_ids,visited_node_ids = self.search_no_block(vector, 0, self.k, self.L, self.max_visits)
+        top_k_node_ids,visited_node_ids = self.search_no_block(vector, 0, 1, self.L, self.max_visits)
         
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
 
