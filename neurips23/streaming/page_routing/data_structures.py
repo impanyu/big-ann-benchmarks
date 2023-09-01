@@ -476,7 +476,7 @@ class Page_Index:
         #self.rw_lock.acquire_write()
         #w_lock = self.marker.gen_rlock()
         #w_lock.acquire()
-        #print(f"insert {new_node_id}")
+        print(f"insert {new_node_id}")
         start_time = time.time()
 
 
@@ -598,7 +598,7 @@ class Page_Index:
         #w_lock.release()
         end_time = time.time()
         
-        #print(f"insert {new_node_id} time: {end_time-start_time}")
+        print(f"insert {new_node_id} time: {end_time-start_time}")
 
 
 
@@ -675,11 +675,6 @@ class Page_Index:
         heapq.heapify(to_visit)
         visited = set() # Keep track of visited nodes
 
-        top_k_node_ids = []
-        if len(top_k_node_ids) < k:
-            top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
-
-        return top_k_node_ids,visited
     
         num_visits = 0
 
@@ -758,7 +753,7 @@ class Page_Index:
             #current_node_page.get_lock().release_read() 
         
 
-        #print(to_visit)
+        print(f"number of visits: {num_visits}")
 
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
