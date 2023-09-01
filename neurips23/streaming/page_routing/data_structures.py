@@ -340,7 +340,7 @@ class Page_Index:
                 continue
             neighbor_page_id = self.node_ids[neighbor_id]
             dis = node.get_distance(self.get_node(neighbor_id).get_vector())
-            page_co_located_counts[neighbor_page_id] = page_co_located_counts.get(neighbor_page_id, 0) + 1
+            page_co_located_counts[neighbor_page_id] = page_co_located_counts.get(neighbor_page_id, 0) + 1/dis
 
             #if node.get_id() in neighbor.get_neighbor_ids():
             #    page_co_located_counts[neighbor_page_id] = page_co_located_counts.get(neighbor_page_id, 0) + 1
