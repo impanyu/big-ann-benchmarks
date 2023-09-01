@@ -682,6 +682,7 @@ class Page_Index:
 
         heapq.heapify(to_visit)
         visited = set() # Keep track of visited nodes
+        queried_nodes = set()
 
     
         num_visits = 0
@@ -757,6 +758,7 @@ class Page_Index:
                     num_visits += 1
                 '''
                 loaded_pages.add(neighbor_page_id)
+                queried_nodes.add(neighbor_id)
                 
 
                 neighbor_node = self.get_node(neighbor_id)
@@ -773,7 +775,7 @@ class Page_Index:
         
 
         print(f"number of loaded pages: {len(loaded_pages)}")
-        print(f"number of visited nodes: {len(visited)}")
+        print(f"number of queried nodes: {len(queried_nodes)}")
 
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
