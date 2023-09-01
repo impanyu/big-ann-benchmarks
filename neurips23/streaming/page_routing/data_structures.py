@@ -710,13 +710,13 @@ class Page_Index:
             current_page_id = self.node_ids[current_node_id]
 
             
-            
+            '''
             if current_page_id not in loaded_pages:#self.page_buffer:
                 # need to load a new page, increase the number of io
                 num_visits += 1
-
+            
             loaded_pages.add(current_page_id)
-
+            '''
             current_node = self.get_node(current_node_id)
 
             if current_node is None:
@@ -742,11 +742,12 @@ class Page_Index:
                 #ioed_pages.add(neighbor_page_id)
                 #if len(ioed_pages) > self.max_ios_per_hop:
                     #break
+                '''
                 neighbor_page_id = self.node_ids[neighbor_id]
                 if neighbor_page_id not in loaded_pages:
                     num_visits += 1
                 loaded_pages.add(neighbor_page_id)
-                
+                '''
 
                 neighbor_node = self.get_node(neighbor_id)
                 neighbor_distance = neighbor_node.get_distance(query_vector)
