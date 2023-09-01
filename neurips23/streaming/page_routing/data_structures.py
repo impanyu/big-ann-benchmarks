@@ -752,8 +752,10 @@ class Page_Index:
                     #break
                 
                 neighbor_page_id = self.node_ids[neighbor_id]
+                '''
                 if neighbor_page_id not in loaded_pages:
                     num_visits += 1
+                '''
                 loaded_pages.add(neighbor_page_id)
                 
 
@@ -770,7 +772,8 @@ class Page_Index:
             #current_node_page.get_lock().release_read() 
         
 
-        print(f"number of visits: {num_visits}")
+        print(f"number of loaded pages: {len(loaded_pages)}")
+        print(f"number of visited nodes: {len(visited)}")
 
         top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
