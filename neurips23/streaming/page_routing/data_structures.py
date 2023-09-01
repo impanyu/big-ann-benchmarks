@@ -339,6 +339,7 @@ class Page_Index:
             if not neighbor_id in self.node_ids:
                 continue
             neighbor_page_id = self.node_ids[neighbor_id]
+            dis = node.get_distance(self.get_node(neighbor_id).get_vector())
             page_co_located_counts[neighbor_page_id] = page_co_located_counts.get(neighbor_page_id, 0) + 1
 
             #if node.get_id() in neighbor.get_neighbor_ids():
@@ -578,7 +579,7 @@ class Page_Index:
         # add the new node to the neighbor list of the neighbors
         for neighbor_id in new_node.get_neighbor_ids():
             neighbor = self.get_node(neighbor_id)
-            #neighbor_page_id = self.node_ids[neighbor_id]
+            neighbor_page_id = self.node_ids[neighbor_id]
             
             
             if neighbor:
@@ -588,6 +589,13 @@ class Page_Index:
 
                 neighbor.add_neighbor(new_node_id)
                 #neighbor_page.lock.release_write()
+            best_neighbor_page = self.find_best_page(neighbor)
+
+            if not best_neighbor_page.get_id() == neighbor_page_id:
+                best_neighbor_page.add_node(neighbor)
+                self.get_page(neighbor_page_id).remove_node(neighbor)
+                self.node_ids[neighbor_id] = best_neighbor_page.get_id()
+
                 
         end_time_2 = time.time()
         #print(f"add neighbors time: {end_time_2-start_time_2}")
