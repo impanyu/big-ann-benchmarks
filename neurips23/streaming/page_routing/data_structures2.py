@@ -16,11 +16,44 @@ class Node:
         self.vector = vector #list of floating point numbers
         self.node_id = node_id
         self.max_neighbors = max_neighbors
-        self.neighbors = []
+
+        self.neighbor_ids = []
         self.alpha = alpha
         self.page_index = page_index
         self.cluster_number = cluster_number
-        self.medoids = []
+        self.clusters = []
+
+    def form_clusters(self):
+        start_time = time.time()
+        self.clusters = []
+        vectors = []
+        vector_ids = []
+        for neighbor_id in self.neighbor_ids:
+            neighbor = self.page_index.get_node(neighbor_id)
+            vectors.append(neighbor.get_vector())
+            vector_ids.append(neighbor_id)
+
+        if len(vectors) == 0:
+            return
+        vectors = np.array(vectors)
+        initial_medoids = random.sample(range(0, len(vectors)), self.cluster_number)
+        kmedoids_instance = kmedoids(vectors, initial_medoids)
+        kmedoids_instance.process()
+        clusters = kmedoids_instance.get_clusters()
+        medoids = kmedoids_instance.get_medoids()
+
+        for i in range(len(clusters)):
+            cluster_member_ids = np.array(vector_ids)[clusters[i]]
+            medoid = medoids[i]
+
+            cluster_radius = np.linalg.norm(vectors[clusters[i]] - medoid,axis=1)
+
+            self.clusters.append({"medoid": medoid, "cluster_member_ids": list(cluster_member_ids),"cluster_radius": list(cluster_radius)})
+ 
+        
+        end_time = time.time()
+        #print("form clusters time: ", end_time - start_time)
+
 
     def remove_deleted_neighbors(self):
         for i in range(len(self.neighbors)-1,-1,-1):
@@ -35,12 +68,15 @@ class Node:
         if len(self.neighbor_ids) > self.max_neighbors:
             self.remove_deleted_neighbors()
             self.prune_neighbors()
+        
+        self.form_clusters()
 
     def add_neighbors(self, new_neighbor_ids):
         self.neighbor_ids = self.neighbor_ids + new_neighbor_ids
         if len(self.neighbor_ids) > self.max_neighbors:
             self.remove_deleted_neighbors()
             self.prune_neighbors()
+        self.form_clusters()
 
     def find_nearest_neighbors(self):
         start_time = time.time()
@@ -48,9 +84,7 @@ class Node:
         heapq.heapify(priority_queue)
         for neighbor_id in self.neighbor_ids:
             neighbor = self.page_index.get_node(neighbor_id)
-            if neighbor is None:
-                #self.neighbor_ids.remove(neighbor_id)
-                continue
+  
             distance = self.get_distance(neighbor.get_vector())
             heapq.heappush(priority_queue, (distance, neighbor_id))
         if len(priority_queue) == 0:
@@ -98,11 +132,8 @@ class Node:
             self.neighbor_ids.remove(neighbor_id)
         
     def get_neighbor_ids(self):
-        clusters = [cluster.get_cluster_members() for cluster in self.clusters]
-        neighbor_ids = []
-        for cluster in clusters:
-            neighbor_ids = neighbor_ids + cluster
-        return neighbor_ids
+    
+        return self.neighbor_ids
     
     def get_vector(self):
         return self.vector
@@ -120,82 +151,12 @@ class Node:
         return np.sum(np.square(np.array(self.vector) - np.array(other_vector)))
         #np.linalg.norm(np.array(self.vector) - np.array(other_vector))
     
-
-class Page:
-    def __init__(self, nodes_per_page, page_id=None):       
-        self.nodes_per_page = nodes_per_page
-        self.nodes = []
-        self.page_id = page_id
-        self.changed = False
-    
-    def add_node(self, new_node):
-        self.nodes.append(new_node)
-   
-
-    def add_nodes(self, new_nodes):
-        self.nodes = self.nodes + new_nodes
-
-    def merge_page(self, page):
-        for node in page.get_nodes():
-            self.add_node(node)
-
-    # this function splits the page into two pages and returns the new page
-    def split_page(self):
-        G = nx.Graph()
-        #self.get_lock().acquire_write()
-
-        node_ids = [node.get_id() for node in self.nodes]
-        G.add_nodes_from(node_ids)
-        for node in self.nodes:
-            for neighbor_id in node.get_neighbor_ids():
-                if neighbor_id in node_ids:
-                    G.add_edge(node.get_id(), neighbor_id)
-        # Use the Kernighan–Lin algorithm to partition the graph into two parts
-        partition = nx.algorithms.community.kernighan_lin_bisection(G)
-
-        # Unpack the two parts
-        part1, part2 = partition
-
-        nodes_1 = [node for node in self.nodes if node.get_id() in part1]
-        nodes_2 = [node for node in self.nodes if node.get_id() in part2]
-        #print(node_ids)
-        #print(part1)
-        #print(part2)
-        
-        self.nodes = nodes_1
-        #self.get_lock().release_write()
-
-        new_page = Page(self.nodes_per_page)
-        new_page.add_nodes(nodes_2)
-
-        return new_page
-
-    def remove_node(self, node):
-        self.nodes.remove(node)
-
-    def get_nodes(self):
-        return self.nodes
-    
-    def get_id(self):
-        return self.page_id
-    
-    def get_node_by_id(self,node_id):
-        for node in self.nodes:
-            if node.get_id() == node_id:
-                return node
-        #print(f"node_id {node_id} not found in page {self.page_id}")
-        #for node in self.nodes:
-        #    print(node.get_id())
-        return None
-    
-    def get_lock(self):
-        return self.lock
     
 
 
 
 class Page_Index:
-    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3):
+    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3):
         self.k = k
         self.L = L
         self.max_visits = max_visits
@@ -205,23 +166,12 @@ class Page_Index:
         self.index_file = index_file
         self.meta_data_file = meta_data_file
 
-        self.nodes_per_page = nodes_per_page
-        self.number_of_pages = 0
 
         self.node_ids = {}
 
-        self.page_buffer = {}
-        self.page_rw_buffer = []
-        self.page_w_buffer = []
+        self.node_w_buffer = []
+        self.node_r_buffer = []
 
-
-
-        self.page_buffer_lock = threading.Lock()
-        
-        self.available_node_ids_lock = threading.Lock()
-        self.available_page_ids_lock = threading.Lock()
-
-        
 
         self.marker = rwlock.RWLockFair()
 
@@ -229,9 +179,8 @@ class Page_Index:
 
         #self.changed_pages = {}
 
-        self.page_buffers_size = page_buffer_size
+        self.node_buffers_size = node_buffer_size
 
-        self.page_size = (self.nodes_per_page * (self.dim+self.max_neighbors+1))* 4
 
         self.max_ios_per_hop = max_ios_per_hop
 
@@ -246,10 +195,11 @@ class Page_Index:
                     self.available_node_ids = self.meta_data['available_node_ids']
             '''
             #else:
-            self.node_ids = {}
-            self.available_page_ids = [0]
+
+
             self.available_node_ids = [0]
-            self.meta_data = {'node_ids':self.node_ids, 'available_page_ids':self.available_page_ids, 'available_node_ids':self.available_node_ids}
+
+            self.meta_data = {'node_ids':self.node_ids,  'available_node_ids':self.available_node_ids}
             with open(self.meta_data_file, 'w') as f:
                 json.dump(self.meta_data, f)
 
@@ -341,7 +291,7 @@ class Page_Index:
     def merge_pages(self, page1, page2):
         page1.merge_page(page2)
         self.delete_page(page2.get_id())
-        self.number_of_pages -= 1
+
         page1.changed = True
 
         #self.changed_pages[page1.get_id()]=page1
@@ -461,7 +411,7 @@ class Page_Index:
 
         if len(self.node_ids) == 0:
             new_page = Page(self.nodes_per_page)
-            self.number_of_pages += 1
+    
             new_page_id = self.get_available_page_id()
             new_page.page_id = new_page_id
             
@@ -524,7 +474,7 @@ class Page_Index:
         # split page if necessary
         if len(best_page.get_nodes()) > self.nodes_per_page:
             new_page = best_page.split_page()
-            self.number_of_pages += 1
+          
             new_page_id = self.get_available_page_id()
 
             #new_page.lock.acquire_write()
