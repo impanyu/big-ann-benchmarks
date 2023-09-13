@@ -12,14 +12,14 @@ from pyclustering.cluster.kmedoids import kmedoids
 
     
 class Node:
-    def __init__(self, vector, node_id,page_index, max_neighbors=50, alpha=1.2, cluster_number=8):
+    def __init__(self, vector, node_id,index, max_neighbors=50, alpha=1.2, cluster_number=8):
         self.vector = vector #list of floating point numbers
         self.node_id = node_id
         self.max_neighbors = max_neighbors
 
         self.neighbor_ids = []
         self.alpha = alpha
-        self.page_index = page_index
+        self.index = index
         self.cluster_number = cluster_number
         self.clusters = []
 
@@ -29,7 +29,7 @@ class Node:
         vectors = []
         vector_ids = []
         for neighbor_id in self.neighbor_ids:
-            neighbor = self.page_index.get_node(neighbor_id)
+            neighbor = self.index.get_node(neighbor_id)
             vectors.append(neighbor.get_vector())
             vector_ids.append(neighbor_id)
 
@@ -58,8 +58,8 @@ class Node:
     def remove_deleted_neighbors(self):
         for i in range(len(self.neighbors)-1,-1,-1):
             neighbor_id = self.neighbors[i][0]
-            #neighbor = self.page_index.get_node(neighbor_id)
-            if neighbor_id not in self.page_index.node_ids:
+            #neighbor = self.index.get_node(neighbor_id)
+            if neighbor_id not in self.index.node_ids:
                 self.neighbors.pop(i)
 
     def add_neighbor(self, new_neighbor_id):
@@ -83,7 +83,7 @@ class Node:
         priority_queue = []
         heapq.heapify(priority_queue)
         for neighbor_id in self.neighbor_ids:
-            neighbor = self.page_index.get_node(neighbor_id)
+            neighbor = self.index.get_node(neighbor_id)
   
             distance = self.get_distance(neighbor.get_vector())
             heapq.heappush(priority_queue, (distance, neighbor_id))
@@ -104,14 +104,14 @@ class Node:
                 break
 
 
-            nearest_neighbor = self.page_index.get_node(nearest_neighbor_id)
+            nearest_neighbor = self.index.get_node(nearest_neighbor_id)
             neighbor_ids.append(nearest_neighbor_id)
             if len(neighbor_ids) >= self.max_neighbors:
                 break
 
             for i in range(len(self.neighbor_ids)-1,-1,-1):
                 neighbor_id = self.neighbor_ids[i]
-                neighbor = self.page_index.get_node(neighbor_id)
+                neighbor = self.index.get_node(neighbor_id)
                 if neighbor is None:
                     #self.neighbor_ids.remove(neighbor_id)
                     continue
@@ -156,11 +156,19 @@ class Node:
         return np.sum(np.square(np.array(self.vector) - np.array(other_vector)))
         #np.linalg.norm(np.array(self.vector) - np.array(other_vector))
     
+    def get_neighbor_distance(self, neighbor_id, vector):
+        for cluster in self.clusters:
+            if neighbor_id in cluster["cluster_member_ids"]:
+                radius = cluster["cluster_radius"][cluster["cluster_member_ids"].index(neighbor_id)]
+                d = np.linalg.norm(np.array(vector) - np.array(cluster["medoid"]))
+                return abs(d-radius),d+radius
+
+        return None
     
 
 
 
-class Page_Index:
+class Self_Routing_Index:
     def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3):
         self.k = k
         self.L = L
@@ -179,11 +187,12 @@ class Page_Index:
 
 
         self.marker = rwlock.RWLockFair()
+        # Create a lock
+        lock = threading.Lock()
+
   
         self.node_buffer_size = node_buffer_size
         self.node_buffer = {}
-
-        self.max_ios_per_hop = max_ios_per_hop
 
         self.pq_size = self.dim
 
@@ -240,6 +249,9 @@ class Page_Index:
 
         self.node_w_buffer.append(node.get_id())
         self.node_buffer[node.get_id()] = node
+
+        if len(self.node_w_buffer) >= self.node_buffer_size:
+            self.dump_changed_nodes()
 
     def remove_from_node_w_buffer(self,node):
         #with self.page_buffer_lock:
@@ -342,20 +354,20 @@ class Page_Index:
         for i in range(self.cluster_number):
             cluster_id = int(node_data[shift])
             cluster_size = int(node_data[shift+1])
-            cluster_medoid = node_data[shift+2:shift+2+self.dim]
-            cluster_member_ids = node_data[shift+2+self.dim:shift+2+self.dim+cluster_size]
+            cluster_medoid = node_data[shift+2:shift+2+self.pq_size]
+            cluster_member_ids = node_data[shift+2+self.pq_size:shift+2+self.pq_size+cluster_size]
             cluster_member_ids = [int(cluster_member_id) for cluster_member_id in cluster_member_ids]
 
-            cluster_radius = node_data[shift+2+self.dim+cluster_size:shift+2+self.dim+cluster_size*2]
+            cluster_radius = node_data[shift+2+self.pq_size+cluster_size:shift+2+self.pq_size+cluster_size*2]
 
             node.clusters.append({"medoid": cluster_medoid, "cluster_member_ids": cluster_member_ids,"cluster_radius": cluster_radius})
-            shift = shift + 2 + self.dim + cluster_size*2
+            shift = shift + 2 + self.pq_size + cluster_size*2
 
         self.add_to_node_r_buffer(node)
 
         return node
     
-    def get_node_by_id(self, node_id):
+    def get_node(self, node_id):
         #with self.page_buffer_lock:
         if node_id in self.node_buffer:
             return self.node_buffer[node_id]
@@ -380,43 +392,46 @@ class Page_Index:
         else:
             
             if new_node_id in self.node_ids:
-                new_node = self.get_node_by_id(new_node_id)
+                new_node = self.get_node(new_node_id)
                 new_node.set_vector(vector)
                 return
-          
+
+
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
-        self.add_to_node_w_buffer(new_node)
-        self.add_to_node_r_buffer(new_node)
-        self.node_ids[new_node_id] = new_node_id
+
+        with self.lock:
+            self.add_to_node_w_buffer(new_node)
+            self.add_to_node_r_buffer(new_node)
+            self.node_ids[new_node_id] = new_node_id
 
     
         
-        top_k_node_ids,visited_node_ids = self.search_no_block(vector, 0, self.k, self.L, self.max_visits)
+        top_k_node_ids,visited_node_ids = self.search(vector, 0, self.k, self.L, self.max_visits)
         
 
-        start_time_3 = time.time()
-        new_node.add_neighbors(list(visited_node_ids))
-        end_time_3 = time.time()
-        #print(f"find best page time: {end_time_3-start_time_3}")
+
+        with self.lock:
+            new_node.add_neighbors(list(visited_node_ids))
+   
+            #print(f"find best page time: {end_time_3-start_time_3}")
+            
+
+            #print(f"add to buffer time: {end_time_1-start_time_1}")
+
+
         
+            # add the new node to the neighbor list of the neighbors
+            for neighbor_id in new_node.get_neighbor_ids():
+                
+    
+                if neighbor_id in self.node_ids:
+                    neighbor = self.get_node(neighbor_id)
 
-        #print(f"add to buffer time: {end_time_1-start_time_1}")
-
-
-        start_time_2 = time.time()
-        # add the new node to the neighbor list of the neighbors
-        for neighbor_id in new_node.get_neighbor_ids():
-            
-  
-            if neighbor_id in self.node_ids:
-                neighbor = self.get_node_by_id(neighbor_id)
-
-                neighbor.add_neighbor(new_node_id)
-            
-                self.add_to_node_w_buffer(neighbor)
+                    neighbor.add_neighbor(new_node_id)
+                
+                    self.add_to_node_w_buffer(neighbor)
 
                 
-        end_time_2 = time.time()
         #print(f"add neighbors time: {end_time_2-start_time_2}")
 
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
@@ -442,7 +457,7 @@ class Page_Index:
         if deleted_node not in self.node_ids:
             return 
         
-        deleted_node = self.get_node_by_id(node_id)
+        deleted_node = self.get_node(node_id)
         #page.get_lock().release_write()
 
         
@@ -450,34 +465,35 @@ class Page_Index:
 
         #self.changed_pages[page_id] = page
         #with self.available_node_ids_lock:
-        self.available_node_ids["deleted_node_ids"].append(node_id)
-        self.remove_from_node_r_buffer(deleted_node)
-        self.remove_from_node_w_buffer(deleted_node)
-        del self.node_ids[node_id]
+        with lock:
+            self.available_node_ids["deleted_node_ids"].append(node_id)
+            self.remove_from_node_r_buffer(deleted_node)
+            self.remove_from_node_w_buffer(deleted_node)
+            del self.node_ids[node_id]
 
     
         # iterate through all the neighbors of the node and remove the node from their neighbor list
         # also add the neighbors of the node to the neighbor list of the neighbors to perserve the links: when a->delete_node and delete_node -> b, we add a->b
         #page.get_lock().acquire_read()
-        for neighbor_id in deleted_node.get_neighbor_ids():
-            
-            if neighbor_id not in self.node_ids:
-                continue
+            for neighbor_id in deleted_node.get_neighbor_ids():
+                
+                if neighbor_id not in self.node_ids:
+                    continue
 
-            neighbor = self.get_node_by_id(neighbor_id)
-            
-            if node_id in neighbor.get_neighbor_ids():
-                neighbor.remove_neighbor(node_id)
-                other_neighbor_ids =[other_neighbor_id for other_neighbor_id in deleted_node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
-                neighbor.add_neighbors(other_neighbor_ids)
+                neighbor = self.get_node(neighbor_id)
+                
+                if node_id in neighbor.get_neighbor_ids():
+                    neighbor.remove_neighbor(node_id)
+                    other_neighbor_ids =[other_neighbor_id for other_neighbor_id in deleted_node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
+                    neighbor.add_neighbors(other_neighbor_ids)
 
-                self.add_to_node_w_buffer(neighbor)
+                    self.add_to_node_w_buffer(neighbor)
 
         
 
         #w_lock.release()
 
-    def search_no_block(self, query_vector, start_node_id, k, L, max_visits):
+    def search(self, query_vector, start_node_id, k, L, max_visits):
         start_time = time.time()
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
@@ -492,66 +508,36 @@ class Page_Index:
 
         start_node = self.get_node(start_node_id)
         dis = start_node.get_distance(query_vector)
-        to_visit = [(dis, start_node_id)]
+        to_visit = [ start_node_id]
 
-        heapq.heapify(to_visit)
+        to_visit_distances = {start_node_id:(dis,dis)}
+
+        
+        #heapq.heapify(to_visit)
         visited = set() # Keep track of visited nodes
-        queried_nodes = set()
+        #queried_nodes = set()
 
     
-        num_visits = 0
-        loaded_pages = set()
+        #num_visits = 0
+    
 
-        while num_visits < max_visits:
-            
-            popped_nodes = []
-            find_nearest_node = False
-            while len(to_visit) >0:
-                distance, current_node_id = heapq.heappop(to_visit)
-                popped_nodes.append((distance,current_node_id))
-            
-                # If we've already visited this node, continue
-                if current_node_id in visited:
-                    continue
-                else:
-                    find_nearest_node = True
+        while len(visited) < max_visits:
+  
+
+            to_visit.sort(key=lambda x: (to_visit_distances[x][0]+to_visit_distances[x][1])/2)
+
+            to_visit = to_visit[:L]
+
+            for i in range(len(to_visit)):
+                current_node_id = to_visit[i]
+                if current_node_id not in visited:
                     break
-
-            if not find_nearest_node:
-                to_visit.extend(popped_nodes)
-                heapq.heapify(to_visit)
-                break
-
-            to_visit.extend(popped_nodes)
-            heapq.heapify(to_visit)
-
             
 
             # Mark this node as visited
             visited.add(current_node_id)
 
-            current_page_id = self.node_ids[current_node_id]
-
-            
-            '''
-            if current_page_id not in loaded_pages:#self.page_buffer:
-                # need to load a new page, increase the number of io
-                num_visits += 1
-            
-            loaded_pages.add(current_page_id)
-            '''
             current_node = self.get_node(current_node_id)
-
-            if current_node is None:
-                continue
-
-            
-
-            #current_node_page = self.get_page(self.node_ids[current_node_id])
-
-            #current_node_page.get_lock().acquire_read()
-
-            #ioed_pages = set()
 
             # Add neighbors to the to_visit queue
             neighbor_ids = current_node.get_neighbor_ids()
@@ -561,76 +547,37 @@ class Page_Index:
                     continue
                 if neighbor_id not in self.node_ids:
                     continue
-                #neighbor_page_id = self.node_ids[neighbor_id]
-                #ioed_pages.add(neighbor_page_id)
-                #if len(ioed_pages) > self.max_ios_per_hop:
-                    #break
-                
-                neighbor_page_id = self.node_ids[neighbor_id]
-                '''
-                if neighbor_page_id not in loaded_pages:
-                    num_visits += 1
-                '''
-                loaded_pages.add(neighbor_page_id)
-                queried_nodes.add(neighbor_id)
+                neighbor_distance_a, neighbor_distance_b = current_node.get_neighbor_distance(neighbor_id,query_vector)
+
+                if neighbor_id not in to_visit_distances:
+                    to_visit_distances[neighbor_id] = (neighbor_distance_a,neighbor_distance_b)
+                    to_visit.append(neighbor_id)
+
+                else:
+                    to_visit_distances[neighbor_id] = (max(neighbor_distance_a,to_visit_distances[neighbor_id][0]),min(neighbor_distance_b,to_visit_distances[neighbor_id][1]))
                 
 
-                neighbor_node = self.get_node(neighbor_id)
-                neighbor_distance = neighbor_node.get_distance(query_vector)
-                
-                heapq.heappush(to_visit, (neighbor_distance, neighbor_id))
-                
+            
 
-            if len(to_visit) > L:
-                top_L = [heapq.heappop(to_visit) for _ in range(L)]
-                to_visit = top_L
 
-            #current_node_page.get_lock().release_read() 
-        
 
-        print(f"number of loaded pages: {len(loaded_pages)}")
-        print(f"number of queried nodes: {len(queried_nodes)}")
-
-        top_k_node_ids = [heapq.heappop(to_visit)[1] for _ in range(min(k,len(to_visit)))]
+        top_k_node_ids = [to_visit[i] for i in range(min(k,len(to_visit)))]
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
 
         end_time = time.time()
         print("search time: ", end_time - start_time)
         #print(len(visited))
-        return top_k_node_ids,visited
-
-           
-    def search(self, query_vector, start_node_id, k, L, max_visits):
-        #r_lock = self.marker.gen_rlock()
-        #r_lock.acquire()
-
-        #print(f"search {query_vector}")
-
-        top_k_node_ids,visited = self.search_no_block(query_vector, start_node_id, k, L, max_visits)
-
-
-        #r_lock.release()
-
-
-        return top_k_node_ids,visited
+        return top_k_node_ids,list(visited)
 
 
 
 
 if __name__ == '__main__':
 
-    page_index = Page_Index(100, 50, 'index.bin', 'node_ids.json')
+    index = Self_Routing_Index(100, 50, 'index.bin', 'node_ids.json')
     #load data from hdf5 file
 
-
-
-
-    # Example usage
-    vectors = np.array([...]) # Your input vectors
-    graph = construct_graph(vectors)
-    query_vector = np.array([...]) # Your query vector
-    nearest_neighbors = greedy_search(graph, query_vector)
 
 
 
