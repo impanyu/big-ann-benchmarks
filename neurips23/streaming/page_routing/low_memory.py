@@ -5,9 +5,9 @@ import numpy as np
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
-class SelfRouting(BaseStreamingANN):
+class Low_Memory(BaseStreamingANN):
     def __init__(self, metric, index_params):
-        self.name = "self_routing"
+        self.name = "low_memory"
         self.insert_threads = index_params.get("insert_threads")
         self.delete_threads = self.insert_threads
     

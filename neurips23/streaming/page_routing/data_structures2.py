@@ -168,7 +168,7 @@ class Node:
 
 
 
-class Self_Routing_Index:
+class Low_Memory_Index:
     def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3):
         self.k = k
         self.L = L
@@ -575,7 +575,7 @@ class Self_Routing_Index:
 
 if __name__ == '__main__':
 
-    index = Self_Routing_Index(100, 50, 'index.bin', 'node_ids.json')
+    index = Low_Memory_Index(100, 50, 'index.bin', 'node_ids.json')
     #load data from hdf5 file
 
 
