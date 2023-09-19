@@ -168,7 +168,7 @@ class Node:
 
 
 
-class Low_Memory_Index:
+class low_memory_index:
     def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=200, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3):
         self.k = k
         self.L = L
@@ -575,7 +575,7 @@ class Low_Memory_Index:
 
 if __name__ == '__main__':
 
-    index = Low_Memory_Index(100, 50, 'index.bin', 'node_ids.json')
+    index = low_memory_index(100, 50, 'index.bin', 'node_ids.json')
     #load data from hdf5 file
 
 

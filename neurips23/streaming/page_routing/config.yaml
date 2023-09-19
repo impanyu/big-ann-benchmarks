@@ -1,7 +1,7 @@
 random-xs:
-    page_routing: 
-      docker-tag: neurips23-streaming-page_routing
-      module: neurips23.streaming.page_routing.page_routing
+    low_memory: 
+      docker-tag: neurips23-streaming-low_memory
+      module: neurips23.streaming.low_memory.low_memory
       constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
@@ -11,9 +11,9 @@ random-xs:
           query-args: |
             [{"Ls":50, "T":8}]
 random-xs-clustered:
-    page_routing: 
-      docker-tag: neurips23-streaming-page_routing
-      module: neurips23.streaming.page_routing.page_routing
+    low_memory: 
+      docker-tag: neurips23-streaming-low_memory
+      module: neurips23.streaming.low_memory.low_memory
       constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
@@ -23,9 +23,9 @@ random-xs-clustered:
           query-args: |
             [{"Ls":50, "T":8}]
 msspacev-1M:
-    page_routing: 
-      docker-tag: neurips23-streaming-page_routing
-      module: neurips23.streaming.page_routing.page_routing
+    low_memory: 
+      docker-tag: neurips23-streaming-low_memory
+      module: neurips23.streaming.low_memory.low_memory
       constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
@@ -36,9 +36,9 @@ msspacev-1M:
             [{"Ls":300, "T":16},
              {"Ls":100, "T":16}]
 msturing-1M:
-    page_routing: 
-      docker-tag: neurips23-streaming-page_routing
-      module: neurips23.streaming.page_routing.page_routing
+    low_memory: 
+      docker-tag: neurips23-streaming-low_memory
+      module: neurips23.streaming.low_memory.low_memory
       constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
@@ -49,9 +49,9 @@ msturing-1M:
             [{"Ls":300, "T":16},
              {"Ls":100, "T":16}]
 msspacev-10M:
-    page_routing: 
-      docker-tag: neurips23-streaming-page_routing
-      module: neurips23.streaming.page_routing.page_routing
+    low_memory: 
+      docker-tag: neurips23-streaming-low_memory
+      module: neurips23.streaming.low_memory.low_memory
       constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
@@ -61,9 +61,9 @@ msspacev-10M:
           query-args: |
             [{"Ls":100, "T":16}]
 msturing-10M:
-    page_routing: 
-      docker-tag: neurips23-streaming-page_routing
-      module: neurips23.streaming.page_routing.page_routing
+    low_memory: 
+      docker-tag: neurips23-streaming-low_memory
+      module: neurips23.streaming.low_memory.low_memory
       constructor: PageRouting
       base-args: ["@metric"]
       run-groups:
@@ -73,9 +73,9 @@ msturing-10M:
           query-args: |
             [{"Ls":100, "T":16}]
 msturing-10M-clustered:
-    page_routing: 
-      docker-tag: neurips23-streaming-page_routing
-      module: neurips23.streaming.page_routing.page_routing
+    low_memory: 
+      docker-tag: neurips23-streaming-low_memory
+      module: neurips23.streaming.low_memory.low_memory
       constructor: PageRouting
       base-args: ["@metric"]
       run-groups:

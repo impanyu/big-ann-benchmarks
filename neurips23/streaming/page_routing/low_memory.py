@@ -1,11 +1,11 @@
 from neurips23.streaming.base import BaseStreamingANN
-from .data_structures2 import Low_Memory_Index
+from .data_structures2 import low_memory_ndex
 import random
 import numpy as np
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
-class Low_Memory(BaseStreamingANN):
+class low_memory(BaseStreamingANN):
     def __init__(self, metric, index_params):
         self.name = "low_memory"
         self.insert_threads = index_params.get("insert_threads")
@@ -26,7 +26,7 @@ class Low_Memory(BaseStreamingANN):
         index_file = "index.bin"
         meta_data_file = "meta_data.json"
 
-        self.index = Low_Memory_Index(ndims, max_neighbors, index_file, meta_data_file, k=1, L=20, max_visits=20, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
+        self.index = low_memory_index(ndims, max_neighbors, index_file, meta_data_file, k=1, L=20, max_visits=20, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
 
       
 
