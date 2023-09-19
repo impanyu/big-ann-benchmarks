@@ -169,7 +169,7 @@ class Node:
 
 
 class Low_Memory_Index:
-    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3):
+    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=200, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3):
         self.k = k
         self.L = L
         self.max_visits = max_visits
@@ -188,7 +188,7 @@ class Low_Memory_Index:
 
         self.marker = rwlock.RWLockFair()
         # Create a lock
-        lock = threading.Lock()
+        self.lock = threading.Lock()
 
   
         self.node_buffer_size = node_buffer_size
@@ -465,7 +465,7 @@ class Low_Memory_Index:
 
         #self.changed_pages[page_id] = page
         #with self.available_node_ids_lock:
-        with lock:
+        with self.lock:
             self.available_node_ids["deleted_node_ids"].append(node_id)
             self.remove_from_node_r_buffer(deleted_node)
             self.remove_from_node_w_buffer(deleted_node)
@@ -498,8 +498,8 @@ class Low_Memory_Index:
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
         if len(self.node_ids) == 0:
-            self.r_lock.release()
-            return [],set()
+            
+            return [],[]
         
 
 

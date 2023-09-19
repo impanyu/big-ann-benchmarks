@@ -1,5 +1,5 @@
 from neurips23.streaming.base import BaseStreamingANN
-from .data_structures import Page_Index
+from .data_structures2 import Low_Memory_Index
 import random
 import numpy as np
 import threading
@@ -22,11 +22,11 @@ class Low_Memory(BaseStreamingANN):
         ndims is the size of the dataset
         '''
         #raise NotImplementedError
-        max_neighbors = 20
+        max_neighbors = 40
         index_file = "index.bin"
         meta_data_file = "meta_data.json"
 
-        self.index = Page_Index(ndims, max_neighbors, index_file, meta_data_file, k=1, L=20, max_visits=20, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
+        self.index = Low_Memory_Index(ndims, max_neighbors, index_file, meta_data_file, k=1, L=20, max_visits=20, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
 
       
 
@@ -128,4 +128,4 @@ class Low_Memory(BaseStreamingANN):
         pass
 
     def __str__(self):
-        return f'page_routing({self.name})'
+        return f'{self.name}({self.name})'
