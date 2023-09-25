@@ -364,7 +364,7 @@ class low_memory_index:
 
         shift = self.dim+1
 
-        print(f"shift {shift}")
+        
 
        
        
@@ -384,6 +384,7 @@ class low_memory_index:
             cluster_radius = node_data[shift+2+self.pq_size+cluster_size:shift+2+self.pq_size+cluster_size*2]
 
             node.clusters.append({"medoid": cluster_medoid, "cluster_member_ids": cluster_member_ids,"cluster_radius": cluster_radius})
+            print(f"cluster_size {cluster_size}")
             shift = shift + 2 + self.pq_size + cluster_size*2
 
         self.add_to_node_r_buffer(node)
