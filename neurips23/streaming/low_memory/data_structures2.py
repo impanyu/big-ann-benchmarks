@@ -48,8 +48,9 @@ class Node:
         clusters = kmedoids_instance.get_clusters()
         medoids = kmedoids_instance.get_medoids()
 
-        print(f"# of clusters: {len(initial_medoids)}")
-        print(f"# of clusters: {len(clusters)}")
+        if len(clusters) != len(initial_medoids):
+            print("cluster number not equal to max cluster number")
+
 
         for i in range(len(clusters)):
             cluster_member_ids = np.array(vector_ids)[clusters[i]]
