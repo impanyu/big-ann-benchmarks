@@ -26,7 +26,7 @@ class low_memory(BaseStreamingANN):
         index_file = "index.bin"
         meta_data_file = "meta_data.json"
 
-        self.index = low_memory_index(ndims, max_neighbors, index_file, meta_data_file, k=1, L=20, max_visits=20, nodes_per_page=20, page_buffer_size=100, max_ios_per_hop = 3)
+        self.index = low_memory_index(ndims, max_neighbors, index_file, meta_data_file, k=1, L=20, max_visits=20, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3)
 
       
 
