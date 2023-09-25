@@ -48,7 +48,8 @@ class Node:
         clusters = kmedoids_instance.get_clusters()
         medoids = kmedoids_instance.get_medoids()
 
-        print(f"# of clusters: {clusters}")
+        print(f"# of clusters: {len(initial_medoids)}")
+        print(f"# of clusters: {len(clusters)}")
 
         for i in range(len(clusters)):
             cluster_member_ids = np.array(vector_ids)[clusters[i]]
