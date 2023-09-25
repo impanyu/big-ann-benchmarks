@@ -350,8 +350,8 @@ class low_memory_index:
         #self.index_file_rw_lock.acquire_read()
         with open(self.index_file, 'rb') as f:
             # index_file is a binary file, so we need to seek to the correct position
-            print(node_id *self.node_size*4)
-            f.seek(node_id)
+            print(node_id )
+            f.seek(node_id *self.node_size*4)
             # read the node from the file
             try:
                 node_data = np.fromfile(f, dtype=np.float32, count=int(self.node_size))
