@@ -534,7 +534,7 @@ class low_memory_index:
                 if current_node_id not in visited:
                     break
 
-            if i == len(to_visit):
+            if i == len(to_visit)-1 and current_node_id in visited:
                 break
             print(current_node_id)
             
