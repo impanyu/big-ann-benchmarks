@@ -1,5 +1,5 @@
 from neurips23.streaming.base import BaseStreamingANN
-from .data_structures2 import low_memory_ndex
+from .data_structures2 import low_memory_index
 import random
 import numpy as np
 import threading
