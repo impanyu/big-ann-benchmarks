@@ -361,7 +361,10 @@ class low_memory_index:
 
         shift = self.dim+1
 
+        print(f"node data length{len(node_data)}")
+
         for i in range(self.max_cluster_number):
+            
             cluster_id = int(node_data[shift])
             if cluster_id == -1:
                 break
