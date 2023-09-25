@@ -66,7 +66,7 @@ class Node:
             neighbor_id = self.neighbor_ids[i]
             #neighbor = self.index.get_node(neighbor_id)
             if neighbor_id not in self.index.node_ids:
-                self.neighbors.pop(i)
+                self.neighbor_ids.pop(i)
 
     def add_neighbor(self, new_neighbor_id):
         self.neighbor_ids.append(new_neighbor_id)
@@ -319,8 +319,7 @@ class low_memory_index:
             #padding within node with -1s
             if len(node_data) < self.node_size:
                 node_data =np.append(node_data,np.full(self.node_size-len(node_data),-1))
-            print(len(node_data))
-            print(self.node_size)
+            
                         
             f.write(node_data.astype(np.float32).tobytes())
 
