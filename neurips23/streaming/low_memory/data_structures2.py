@@ -315,7 +315,7 @@ class low_memory_index:
            
             #padding within node with -1s
             if len(node_data) < self.node_size:
-                node_data.append(np.full(self.node_size-len(node_data),-1))
+                np.append(node_data,np.full(self.node_size-len(node_data),-1))
                         
             f.write(node_data.astype(np.float32).tobytes())
 
