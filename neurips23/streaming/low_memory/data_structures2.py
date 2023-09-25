@@ -62,8 +62,8 @@ class Node:
 
 
     def remove_deleted_neighbors(self):
-        for i in range(len(self.neighbors)-1,-1,-1):
-            neighbor_id = self.neighbors[i][0]
+        for i in range(len(self.neighbor_ids)-1,-1,-1):
+            neighbor_id = self.neighbor_ids[i][0]
             #neighbor = self.index.get_node(neighbor_id)
             if neighbor_id not in self.index.node_ids:
                 self.neighbors.pop(i)
