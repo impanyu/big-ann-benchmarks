@@ -580,7 +580,7 @@ class low_memory_index:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
 
         end_time = time.time()
-        print("search time: ", end_time - start_time)
+        #print("search time: ", end_time - start_time)
         #print(len(visited))
         return top_k_node_ids,list(visited)
 
