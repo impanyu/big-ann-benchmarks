@@ -533,11 +533,14 @@ class low_memory_index:
                 current_node_id = to_visit[i]
                 if current_node_id not in visited:
                     break
+
+            if i == len(to_visit):
+                break
             
 
             # Mark this node as visited
             visited.add(current_node_id)
-            print(current_node_id)
+            
 
             current_node = self.get_node(current_node_id)
 
