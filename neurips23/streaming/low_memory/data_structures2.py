@@ -308,17 +308,17 @@ class low_memory_index:
 
             for cluster_id in range(len(node.clusters)):
                 cluster = clusters[cluster_id]
-                np.append(node_data,cluster_id)
-                np.append(node_data,len(cluster["cluster_member_ids"]))
-                np.append(node_data,cluster["medoid"])
-                np.append(node_data,cluster["cluster_member_ids"])
-                np.append(node_data,cluster["cluster_radius"])
+                node_data =np.append(node_data,cluster_id)
+                node_data =np.append(node_data,len(cluster["cluster_member_ids"]))
+                node_data =np.append(node_data,cluster["medoid"])
+                node_data =np.append(node_data,cluster["cluster_member_ids"])
+                node_data = np.append(node_data,cluster["cluster_radius"])
                 
 
            
             #padding within node with -1s
             if len(node_data) < self.node_size:
-                np.append(node_data,np.full(self.node_size-len(node_data),-1))
+                node_data =np.append(node_data,np.full(self.node_size-len(node_data),-1))
             print(len(node_data))
             print(self.node_size)
                         
