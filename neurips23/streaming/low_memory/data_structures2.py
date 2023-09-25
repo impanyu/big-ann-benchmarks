@@ -169,7 +169,7 @@ class Node:
 
 
 class low_memory_index:
-    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=200, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3):
+    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=200, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3,cluster_number = 8):
         self.k = k
         self.L = L
         self.max_visits = max_visits
@@ -195,6 +195,7 @@ class low_memory_index:
         self.node_buffer = {}
 
         self.pq_size = self.dim
+        self.cluster_number = cluster_number
 
         self.node_size = 1+ self.dim + self.max_neighbors*2 + self.cluster_number*(2+self.pq_size) 
 
