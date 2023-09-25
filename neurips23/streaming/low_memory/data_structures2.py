@@ -320,6 +320,7 @@ class low_memory_index:
             if len(node_data) < self.node_size:
                 np.append(node_data,np.full(self.node_size-len(node_data),-1))
             print(len(node_data))
+            print(self.node_size)
                         
             f.write(node_data.astype(np.float32).tobytes())
 
