@@ -463,7 +463,7 @@ class low_memory_index:
     
         #print("deleting node")
         
-        if deleted_node not in self.node_ids:
+        if node_id not in self.node_ids:
             return 
         
         deleted_node = self.get_node(node_id)
