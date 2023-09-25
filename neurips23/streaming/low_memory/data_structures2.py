@@ -262,12 +262,15 @@ class low_memory_index:
 
     def remove_from_node_w_buffer(self,node):
         #with self.page_buffer_lock:
+        
+
         for i in range(len(self.node_w_buffer)):
             if node.get_id() == self.node_w_buffer[i]:
                 self.node_w_buffer.pop(i)
+  
                 break
 
-        if node.get_id() not in self.node_r_buffer:
+        if node.get_id() in self.node_buffer and node.get_id() not in self.node_r_buffer:
             del self.node_buffer[node.get_id()]
     
     def remove_from_node_r_buffer(self,node):
@@ -277,7 +280,7 @@ class low_memory_index:
                 self.node_r_buffer.pop(i)
                 break
 
-        if node.get_id() not in self.node_w_buffer:
+        if node.get_id() in self.node_buffer and node.get_id() not in self.node_w_buffer:
             del self.node_buffer[node.get_id()]
 
 
