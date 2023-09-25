@@ -305,11 +305,11 @@ class low_memory_index:
 
             for cluster_id in range(len(node.clusters)):
                 cluster = clusters[cluster_id]
-                node_data.append(cluster_id)
-                node_data.append(len(cluster["cluster_member_ids"]))
-                node_data.append(cluster["medoid"])
-                node_data.append(cluster["cluster_member_ids"])
-                node_data.append(cluster["cluster_radius"])
+                np.append(node_data,cluster_id)
+                np.append(node_data,len(cluster["cluster_member_ids"]))
+                np.append(node_data,cluster["medoid"])
+                np.append(node_data,cluster["cluster_member_ids"])
+                np.append(node_data,cluster["cluster_radius"])
                 
 
            
@@ -414,9 +414,9 @@ class low_memory_index:
             self.node_ids[new_node_id] = new_node_id
 
     
-        print(f"insert {new_node_id}")
+ 
         top_k_node_ids,visited_node_ids = self.search(vector, 0, self.k, self.L, self.max_visits)
-        print(f"insert {new_node_id}")
+
 
 
         with self.lock:
