@@ -537,6 +537,7 @@ class low_memory_index:
 
             # Mark this node as visited
             visited.add(current_node_id)
+            print(current_node_id)
 
             current_node = self.get_node(current_node_id)
 
