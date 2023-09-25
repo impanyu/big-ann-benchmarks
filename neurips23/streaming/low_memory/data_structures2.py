@@ -406,9 +406,9 @@ class low_memory_index:
             self.node_ids[new_node_id] = new_node_id
 
     
-        
+        print(f"insert {new_node_id}")
         top_k_node_ids,visited_node_ids = self.search(vector, 0, self.k, self.L, self.max_visits)
-        
+        print(f"insert {new_node_id}")
 
 
         with self.lock:
