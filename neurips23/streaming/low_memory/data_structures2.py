@@ -364,6 +364,8 @@ class low_memory_index:
 
         shift = self.dim+1
 
+        print(f"shift {shift}")
+
        
        
 
