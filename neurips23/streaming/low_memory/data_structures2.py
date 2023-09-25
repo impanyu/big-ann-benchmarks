@@ -48,6 +48,7 @@ class Node:
         clusters = kmedoids_instance.get_clusters()
         medoids = kmedoids_instance.get_medoids()
 
+        print(len(initial_medoids))
         if len(clusters) != len(initial_medoids):
             print("cluster number not equal to max cluster number")
 
