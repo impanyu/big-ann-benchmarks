@@ -361,7 +361,7 @@ class low_memory_index:
 
         shift = self.dim+1
 
-        #print(f"node data length {len(node_data)}")
+        print(f"node data length {len(node_data)}")
 
         for i in range(self.max_cluster_number):
             
