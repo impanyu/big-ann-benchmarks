@@ -48,6 +48,8 @@ class Node:
         clusters = kmedoids_instance.get_clusters()
         medoids = kmedoids_instance.get_medoids()
 
+        print(f"# of clusters: {len(clusters)}")
+
         for i in range(len(clusters)):
             cluster_member_ids = np.array(vector_ids)[clusters[i]]
             medoid = medoids[i]
@@ -310,7 +312,7 @@ class low_memory_index:
                 cluster = clusters[cluster_id]
                 node_data =np.append(node_data,cluster_id)
                 node_data =np.append(node_data,len(cluster["cluster_member_ids"]))
-                print(f'cluster_size {len(cluster["cluster_member_ids"])}')
+                #print(f'cluster_size {len(cluster["cluster_member_ids"])}')
                 node_data =np.append(node_data,cluster["medoid"])
                 node_data =np.append(node_data,cluster["cluster_member_ids"])
                 node_data = np.append(node_data,cluster["cluster_radius"])
