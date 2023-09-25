@@ -361,7 +361,7 @@ class low_memory_index:
 
         shift = self.dim+1
 
-        print(f"node data length {len(node_data)}")
+       
 
         for i in range(self.max_cluster_number):
             
@@ -372,6 +372,8 @@ class low_memory_index:
             cluster_medoid = node_data[shift+2:shift+2+self.pq_size]
             cluster_member_ids = node_data[shift+2+self.pq_size:shift+2+self.pq_size+cluster_size]
             cluster_member_ids = [int(cluster_member_id) for cluster_member_id in cluster_member_ids]
+
+            node.neighbor_ids = node.neighbor_ids + cluster_member_ids
 
             cluster_radius = node_data[shift+2+self.pq_size+cluster_size:shift+2+self.pq_size+cluster_size*2]
 
