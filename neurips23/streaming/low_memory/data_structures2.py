@@ -536,6 +536,7 @@ class low_memory_index:
 
             if i == len(to_visit):
                 break
+            print(current_node_id)
             
 
             # Mark this node as visited
