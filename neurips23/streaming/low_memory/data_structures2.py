@@ -12,7 +12,7 @@ from pyclustering.cluster.kmedoids import kmedoids
 
     
 class Node:
-    def __init__(self, vector, node_id,index, max_neighbors=50, alpha=1.2, cluster_number=8):
+    def __init__(self, vector, node_id,index, max_neighbors=50, alpha=1.2, max_cluster_number=8):
         self.vector = vector #list of floating point numbers
         self.node_id = node_id
         self.max_neighbors = max_neighbors
@@ -20,7 +20,7 @@ class Node:
         self.neighbor_ids = []
         self.alpha = alpha
         self.index = index
-        self.cluster_number = cluster_number
+        self.max_cluster_number = max_cluster_number
         self.clusters = []
 
     def form_clusters(self):
@@ -35,8 +35,14 @@ class Node:
 
         if len(vectors) == 0:
             return
+        if len(vectors) < self.max_cluster_number:
+            for i in range(len(vectors)):
+                medoid = vectors[i]
+                self.clusters.append({"medoid": medoid, "cluster_member_ids": [vector_ids[i]],"cluster_radius": [0]})
+            return
+
         vectors = np.array(vectors)
-        initial_medoids = random.sample(range(0, len(vectors)), self.cluster_number)
+        initial_medoids = random.sample(range(0, len(vectors)), self.max_cluster_number)
         kmedoids_instance = kmedoids(vectors, initial_medoids)
         kmedoids_instance.process()
         clusters = kmedoids_instance.get_clusters()
@@ -169,7 +175,7 @@ class Node:
 
 
 class low_memory_index:
-    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=200, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3,cluster_number = 8):
+    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=200, nodes_per_page=20, node_buffer_size=100, max_ios_per_hop = 3,max_cluster_number = 8):
         self.k = k
         self.L = L
         self.max_visits = max_visits
@@ -195,9 +201,9 @@ class low_memory_index:
         self.node_buffer = {}
 
         self.pq_size = self.dim
-        self.cluster_number = cluster_number
+        self.max_cluster_number = max_cluster_number
 
-        self.node_size = 1+ self.dim + self.max_neighbors*2 + self.cluster_number*(2+self.pq_size) 
+        self.node_size = 1+ self.dim + self.max_neighbors*2 + self.max_cluster_number*(2+self.pq_size) 
 
         try:
             '''
@@ -297,7 +303,7 @@ class low_memory_index:
             node_data = np.append([node.get_id()], node.get_vector())
             
 
-            for cluster_id in range(self.cluster_number):
+            for cluster_id in range(len(node.clusters)):
                 cluster = clusters[cluster_id]
                 node_data.append(cluster_id)
                 node_data.append(len(cluster["cluster_member_ids"]))
@@ -352,8 +358,10 @@ class low_memory_index:
 
         shift = self.dim+1
 
-        for i in range(self.cluster_number):
+        for i in range(self.max_cluster_number):
             cluster_id = int(node_data[shift])
+            if cluster_id == -1:
+                break
             cluster_size = int(node_data[shift+1])
             cluster_medoid = node_data[shift+2:shift+2+self.pq_size]
             cluster_member_ids = node_data[shift+2+self.pq_size:shift+2+self.pq_size+cluster_size]
@@ -536,7 +544,7 @@ class low_memory_index:
 
             if i == len(to_visit)-1 and current_node_id in visited:
                 break
-            print(current_node_id)
+            #print(current_node_id)
             
 
             # Mark this node as visited
