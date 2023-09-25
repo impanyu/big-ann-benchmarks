@@ -319,7 +319,7 @@ class low_memory_index:
             #padding within node with -1s
             if len(node_data) < self.node_size:
                 node_data =np.append(node_data,np.full(self.node_size-len(node_data),-1))
-            print(len(node_data))
+            #print(len(node_data))
             
                         
             f.write(node_data.astype(np.float32).tobytes())
@@ -362,6 +362,8 @@ class low_memory_index:
         node = Node(vector, node_id, self,self.max_neighbors)
 
         shift = self.dim+1
+
+        print(shift)
 
        
 
