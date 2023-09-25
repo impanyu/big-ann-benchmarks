@@ -350,6 +350,7 @@ class low_memory_index:
         #self.index_file_rw_lock.acquire_read()
         with open(self.index_file, 'rb') as f:
             # index_file is a binary file, so we need to seek to the correct position
+            print(node_id *self.node_size*4)
             f.seek(node_id *self.node_size*4)
             # read the node from the file
             try:
@@ -363,8 +364,7 @@ class low_memory_index:
 
         shift = self.dim+1
 
-        print(shift)
-
+       
        
 
         for i in range(self.max_cluster_number):
