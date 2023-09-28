@@ -444,8 +444,7 @@ class low_memory_index:
         #w_lock.acquire()
         print(f"insert {new_node_id}")
         start_time = time.time()
-        if new_node_id == -1:
-            print("here")
+        
 
         if new_node_id is None:
  
@@ -458,7 +457,8 @@ class low_memory_index:
                 new_node.set_vector(vector)
                 return
         
-        
+        if new_node_id == -1:
+            print("here")
 
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
 
