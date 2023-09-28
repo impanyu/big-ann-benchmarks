@@ -37,18 +37,18 @@ class low_memory(BaseStreamingANN):
         ids is num_vectors-sized array which indicates ids for each vector
         '''
 
-        for i in range(len(X)):
-                x = X[i]
-                x_id = ids[i]
-                self.index.insert_node(x, x_id)
-        '''
+        #for i in range(len(X)):
+        #        x = X[i]
+        #        x_id = ids[i]
+        #        self.index.insert_node(x, x_id)
+        
         with ThreadPoolExecutor(max_workers=self.insert_threads) as executor:
             # Submit tasks to the executor
             for i in range(len(X)):
                 x = X[i]
                 x_id = ids[i]
                 executor.submit(self.index.insert_node, x, x_id)
-        '''
+        
         '''
         threads = []
 
