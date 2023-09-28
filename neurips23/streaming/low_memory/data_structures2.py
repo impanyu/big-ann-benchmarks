@@ -37,7 +37,7 @@ class Node:
 
         if len(vectors) == 0:
             return
-        if len(vectors) < self.max_cluster_number:
+        if True:#len(vectors) < self.max_cluster_number:
             for i in range(len(vectors)):
                 medoid = vectors[i]
                 self.clusters.append({"medoid": medoid, "cluster_member_ids": [vector_ids[i]],"cluster_radius": [0]})
@@ -236,7 +236,7 @@ class low_memory_index:
         self.node_buffer = {}
 
         self.pq_size = self.dim
-        self.max_cluster_number = max_cluster_number
+        self.max_cluster_number = self.max_neighbors#max_cluster_number
 
         self.node_size = 1+ self.dim + self.max_neighbors*2 + self.max_cluster_number*(2+self.pq_size) 
 
