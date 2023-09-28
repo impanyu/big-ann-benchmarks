@@ -99,6 +99,8 @@ class Node:
                 self.neighbor_ids.pop(i)
 
     def add_neighbor(self, new_neighbor_id):
+        if new_neighbor_id == -1:
+            print("here")
         
         self.neighbor_ids.append(new_neighbor_id)
         self.neighbor_ids = list(set(self.neighbor_ids))
@@ -110,6 +112,8 @@ class Node:
         self.form_clusters()
 
     def add_neighbors(self, new_neighbor_ids):
+        if -1 in new_neighbor_ids:
+            print("heres")
         self.neighbor_ids = self.neighbor_ids + new_neighbor_ids
         self.neighbor_ids = list(set(self.neighbor_ids))
         if len(self.neighbor_ids) > self.max_neighbors:
@@ -457,8 +461,6 @@ class low_memory_index:
                 new_node.set_vector(vector)
                 return
         
-        if new_node_id == -1:
-            print("here")
 
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
 
