@@ -158,7 +158,7 @@ class Node:
                 distance_1 = nearest_neighbor.get_distance(neighbor.get_vector())
                 distance_2 = self.get_distance(neighbor.get_vector())
 
-                if self.alpha * distance_1 < distance_2:
+                if self.alpha * distance_1 <= distance_2:
                     self.neighbor_ids.pop(i)
      
   
