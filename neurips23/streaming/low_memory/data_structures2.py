@@ -71,8 +71,8 @@ class Node:
         
         
         #print(f"number of clusters: {len(clusters)}")
-        print(clusters)
-        print(self.neighbor_ids)
+        #print(clusters)
+        #print(self.neighbor_ids)
         #print(self.node_id)
         if len(clusters) != self.max_cluster_number:
             print("cluster number not equal to max cluster number")
@@ -404,11 +404,7 @@ class low_memory_index:
 
         shift = self.dim+1
 
-        
-
-       
-       
-
+        print(node_data)
         for i in range(self.max_cluster_number):
             
             cluster_id = int(node_data[shift])
