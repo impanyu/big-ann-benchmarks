@@ -610,8 +610,8 @@ class low_memory_index:
             
 
             current_node = self.get_node(current_node_id)
-
-            # Add neighbors to the to_visit queue
+            to_visit_distances[current_node_id] = current_node.get_distance(query_vector)
+            
             neighbor_ids = current_node.get_neighbor_ids()
 
             for neighbor_id in neighbor_ids:
