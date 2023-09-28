@@ -72,7 +72,7 @@ class Node:
         
         #print(f"number of clusters: {len(clusters)}")
         #print(clusters)
-        print(self.neighbor_ids)
+        #print(self.neighbor_ids)
         print(self.node_id)
         if len(clusters) != self.max_cluster_number:
             print("cluster number not equal to max cluster number")
