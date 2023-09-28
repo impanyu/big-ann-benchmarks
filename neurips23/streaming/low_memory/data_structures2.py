@@ -348,6 +348,8 @@ class low_memory_index:
                 node_data =np.append(node_data,cluster["cluster_member_ids"])
                 node_data = np.append(node_data,cluster["cluster_radius"])
                 
+            if len(node_data) > self.node_size:
+                print("node size too large!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
            
             #padding within node with -1s
