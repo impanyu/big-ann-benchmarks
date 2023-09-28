@@ -999,7 +999,7 @@ DATASETS = {
     'sparse-1M': lambda: SparseDataset("1M"),
     'sparse-full': lambda: SparseDataset("full"), 
 
-    'random-xs': lambda : RandomDS(1000, 1000, 20),
+    'random-xs': lambda : RandomDS(10000, 1000, 20),
     'random-s': lambda : RandomDS(100000, 1000, 50),
 
     'random-xs-clustered': lambda: RandomClusteredDS(),
