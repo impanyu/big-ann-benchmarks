@@ -55,21 +55,22 @@ class Node:
         
         medoids = kmedoids.cluster_centers_
 
-        all_cluster_member_ids = []
+        clusters = []
 
         for k in range(self.max_cluster_number):
-            cluster_member_ids = [vectors[i] for i, x in enumerate(kmedoids.labels_) if x == k]
-            all_cluster_member_ids.append(cluster_member_ids)
+            cluster = [i for i, x in enumerate(kmedoids.labels_) if x == k]
+            clusters.append(cluster)
 
         
-        print(len(initial_medoids))
+        
         print(len(clusters))
-        if len(clusters) != len(initial_medoids):
+        if len(clusters) != self.max_cluster_number:
             print("cluster number not equal to max cluster number")
 
+        
 
-        for i in range(len(clusters)):
-            cluster_member_ids = all_cluster_member_ids[i]#np.array(vector_ids)[clusters[i]]
+        for i in range(self.max_cluster_number):
+            cluster_member_ids = np.array(vector_ids)[clusters[i]]
             medoid = medoids[i]
             cluster_radius = np.linalg.norm(vectors[clusters[i]] - medoid,axis=1)
             self.clusters.append({"medoid": medoid, "cluster_member_ids": list(cluster_member_ids),"cluster_radius": list(cluster_radius)})
