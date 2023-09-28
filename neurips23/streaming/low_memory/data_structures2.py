@@ -335,6 +335,7 @@ class low_memory_index:
     def dump_changed_node(self, node):  
         node_id = node.get_id()
         #self.index_file_rw_lock.acquire_write()
+        print(f"dump {node_id}")
   
         with open(self.index_file, 'rb+') as f:
             f.seek(node_id *self.node_size*4)
@@ -352,8 +353,8 @@ class low_memory_index:
                 node_data =np.append(node_data,cluster["cluster_member_ids"])
                 node_data = np.append(node_data,cluster["cluster_radius"])
 
-                print(f"dump cluster {cluster['cluster_member_ids']}")
-                print(f"dump cluster {cluster['cluster_radius']}")
+                #print(f"dump cluster {cluster['cluster_member_ids']}")
+                #print(f"dump cluster {cluster['cluster_radius']}")
                 
             if len(node_data) > self.node_size:
                 print("node size too large!")
@@ -391,6 +392,7 @@ class low_memory_index:
 
     def get_node_from_file(self, node_id):
         #self.index_file_rw_lock.acquire_read()
+        print(f"read {node_id}")
         with open(self.index_file, 'rb') as f:
             # index_file is a binary file, so we need to seek to the correct position
             print(node_id)
