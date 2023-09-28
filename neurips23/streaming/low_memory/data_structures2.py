@@ -8,6 +8,7 @@ import threading
 from readerwriterlock import rwlock
 import time
 from pyclustering.cluster.kmedoids import kmedoids
+from sklearn_extra.cluster import KMedoids
 
 
     
@@ -42,12 +43,25 @@ class Node:
             return
 
         vectors = np.array(vectors)
-        initial_medoids = random.sample(range(0, len(vectors)), self.max_cluster_number)
-        kmedoids_instance = kmedoids(vectors, initial_medoids)
-        kmedoids_instance.process()
-        clusters = kmedoids_instance.get_clusters()
-        medoids = kmedoids_instance.get_medoids()
+        #initial_medoids = random.sample(range(0, len(vectors)), self.max_cluster_number)
+        #kmedoids_instance = kmedoids(vectors, initial_medoids)
+        #kmedoids_instance.process()
+        #clusters = kmedoids_instance.get_clusters()
+        #medoids = kmedoids_instance.get_medoids()
 
+
+        # Create KMedoids instance and fit
+        kmedoids = KMedoids(n_clusters = self.max_cluster_number, random_state=0).fit(vectors)      
+        
+        medoids = kmedoids.cluster_centers_
+
+        all_cluster_member_ids = []
+
+        for k in range(self.max_cluster_number):
+            cluster_member_ids = [vectors[i] for i, x in enumerate(kmedoids.labels_) if x == k]
+            all_cluster_member_ids.append(cluster_member_ids)
+
+        
         print(len(initial_medoids))
         print(len(clusters))
         if len(clusters) != len(initial_medoids):
@@ -55,11 +69,9 @@ class Node:
 
 
         for i in range(len(clusters)):
-            cluster_member_ids = np.array(vector_ids)[clusters[i]]
+            cluster_member_ids = all_cluster_member_ids[i]#np.array(vector_ids)[clusters[i]]
             medoid = medoids[i]
-
             cluster_radius = np.linalg.norm(vectors[clusters[i]] - medoid,axis=1)
-
             self.clusters.append({"medoid": medoid, "cluster_member_ids": list(cluster_member_ids),"cluster_radius": list(cluster_radius)})
  
         
