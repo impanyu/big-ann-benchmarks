@@ -335,7 +335,7 @@ class low_memory_index:
     def dump_changed_node(self, node):  
         node_id = node.get_id()
         #self.index_file_rw_lock.acquire_write()
-        print(f"dump {node_id}")
+        #print(f"dump {node_id}")
   
         with open(self.index_file, 'rb+') as f:
             f.seek(node_id *self.node_size*4)
@@ -377,7 +377,7 @@ class low_memory_index:
             self.dump_changed_node(node)
             self.node_w_buffer.remove(node_id)
 
-            if node_id not in self.node_r_buffer:
+            if node.get_id() in self.node_buffer and node_id not in self.node_r_buffer:
                 del self.node_buffer[node_id]
             
             self.dump_changed_node(node)
@@ -392,7 +392,7 @@ class low_memory_index:
 
     def get_node_from_file(self, node_id):
         #self.index_file_rw_lock.acquire_read()
-        print(f"read {node_id}")
+        #print(f"read {node_id}")
         with open(self.index_file, 'rb') as f:
             # index_file is a binary file, so we need to seek to the correct position
             print(node_id)
@@ -419,6 +419,11 @@ class low_memory_index:
             cluster_medoid = node_data[shift+2:shift+2+self.pq_size]
             cluster_member_ids = node_data[shift+2+self.pq_size:shift+2+self.pq_size+cluster_size]
             cluster_member_ids = [int(cluster_member_id) for cluster_member_id in cluster_member_ids]
+
+            if -1 in cluster_member_ids:
+                print("here")
+                print(node_data)
+                print(cluster_member_ids)
 
             node.neighbor_ids = node.neighbor_ids + cluster_member_ids
 
