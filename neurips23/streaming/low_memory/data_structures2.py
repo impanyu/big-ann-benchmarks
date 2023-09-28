@@ -395,7 +395,7 @@ class low_memory_index:
         #print(f"read {node_id}")
         with open(self.index_file, 'rb') as f:
             # index_file is a binary file, so we need to seek to the correct position
-            print(node_id)
+            #print(node_id)
             f.seek(node_id *self.node_size*4)
             # read the node from the file
             try:
@@ -428,11 +428,7 @@ class low_memory_index:
 
             node.clusters.append({"medoid": cluster_medoid, "cluster_member_ids": cluster_member_ids,"cluster_radius": cluster_radius})
            
-            if -1 in cluster_member_ids:
-                print("here")
-                print(node_data)
-                print(cluster_member_ids)
-                print(cluster_radius)
+
             shift = shift + 2 + self.pq_size + cluster_size*2
 
         self.add_to_node_r_buffer(node)
