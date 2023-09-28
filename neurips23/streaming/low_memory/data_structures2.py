@@ -57,7 +57,7 @@ class Node:
         #medoids = kmedoids.cluster_centers_
 
         # Initialize KMeans
-        kmeans = KMeans(n_clusters=self.max_cluster_number)
+        kmeans = KMeans(n_clusters=self.max_cluster_number,n_init=6)
 
         # Fit the model
         kmeans.fit(vectors)
