@@ -72,7 +72,8 @@ class Node:
         
         print(f"number of clusters: {len(clusters)}")
         print(clusters)
-        print(vectors)
+        print(self.neighbor_ids)
+        
         if len(clusters) != self.max_cluster_number:
             print("cluster number not equal to max cluster number")
 
@@ -80,6 +81,7 @@ class Node:
 
         for i in range(self.max_cluster_number):
             cluster_member_ids = np.array(vector_ids)[clusters[i]]
+            
             medoid = kmeans.cluster_centers_[i]
             cluster_radius = np.linalg.norm(vectors[clusters[i]] - medoid,axis=1)
             self.clusters.append({"medoid": medoid, "cluster_member_ids": list(cluster_member_ids),"cluster_radius": list(cluster_radius)})
