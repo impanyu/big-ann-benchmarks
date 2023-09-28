@@ -99,8 +99,9 @@ class Node:
                 self.neighbor_ids.pop(i)
 
     def add_neighbor(self, new_neighbor_id):
-        if new_neighbor_id not in self.neighbor_ids:
-            self.neighbor_ids.append(new_neighbor_id)
+        
+        self.neighbor_ids.append(new_neighbor_id)
+        self.neighbor_ids = list(set(self.neighbor_ids))
 
         if len(self.neighbor_ids) > self.max_neighbors:
             self.remove_deleted_neighbors()
