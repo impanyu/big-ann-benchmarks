@@ -12,3 +12,4 @@ pandas==2.0.0
 networkx
 readerwriterlock
 pyclustering
+scikit-learn-extra
