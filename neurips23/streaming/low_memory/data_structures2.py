@@ -82,7 +82,7 @@ class Node:
         for i in range(self.max_cluster_number):
             cluster_member_ids = np.array(vector_ids)[clusters[i]]
             
-            medoid = medoids[i]
+            medoid = vectors[medoids[i]]
             cluster_radius = np.linalg.norm(vectors[clusters[i]] - medoid,axis=1)
             self.clusters.append({"medoid": medoid, "cluster_member_ids": list(cluster_member_ids),"cluster_radius": list(cluster_radius)})
  
@@ -420,10 +420,7 @@ class low_memory_index:
             cluster_member_ids = node_data[shift+2+self.pq_size:shift+2+self.pq_size+cluster_size]
             cluster_member_ids = [int(cluster_member_id) for cluster_member_id in cluster_member_ids]
 
-            if -1 in cluster_member_ids:
-                print("here")
-                print(node_data)
-                print(cluster_member_ids)
+            
 
             node.neighbor_ids = node.neighbor_ids + cluster_member_ids
 
@@ -431,6 +428,11 @@ class low_memory_index:
 
             node.clusters.append({"medoid": cluster_medoid, "cluster_member_ids": cluster_member_ids,"cluster_radius": cluster_radius})
            
+            if -1 in cluster_member_ids:
+                print("here")
+                print(node_data)
+                print(cluster_member_ids)
+                print(cluster_radius)
             shift = shift + 2 + self.pq_size + cluster_size*2
 
         self.add_to_node_r_buffer(node)
