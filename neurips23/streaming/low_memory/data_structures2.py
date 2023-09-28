@@ -44,11 +44,11 @@ class Node:
             return
 
         vectors = np.array(vectors)
-        #initial_medoids = random.sample(range(0, len(vectors)), self.max_cluster_number)
-        #kmedoids_instance = kmedoids(vectors, initial_medoids)
-        #kmedoids_instance.process()
-        #clusters = kmedoids_instance.get_clusters()
-        #medoids = kmedoids_instance.get_medoids()
+        initial_medoids = random.sample(range(0, len(vectors)), self.max_cluster_number)
+        kmedoids_instance = kmedoids(vectors, initial_medoids)
+        kmedoids_instance.process()
+        clusters = kmedoids_instance.get_clusters()
+        medoids = kmedoids_instance.get_medoids()
 
 
         # Create KMedoids instance and fit
@@ -57,16 +57,16 @@ class Node:
         #medoids = kmedoids.cluster_centers_
 
         # Initialize KMeans
-        kmeans = KMeans(n_clusters=self.max_cluster_number,n_init=6)
+        #kmeans = KMeans(n_clusters=self.max_cluster_number,n_init=6)
 
         # Fit the model
-        kmeans.fit(vectors)
+        #kmeans.fit(vectors)
 
-        clusters = []
+        #clusters = []
 
-        for k in range(self.max_cluster_number):
-            cluster = [i for i, x in enumerate(kmeans.labels_) if x == k]
-            clusters.append(cluster)
+        #for k in range(self.max_cluster_number):
+        #    cluster = [i for i, x in enumerate(kmeans.labels_) if x == k]
+        #    clusters.append(cluster)
 
         
         
@@ -82,7 +82,7 @@ class Node:
         for i in range(self.max_cluster_number):
             cluster_member_ids = np.array(vector_ids)[clusters[i]]
             
-            medoid = kmeans.cluster_centers_[i]
+            medoid = medoids[i]
             cluster_radius = np.linalg.norm(vectors[clusters[i]] - medoid,axis=1)
             self.clusters.append({"medoid": medoid, "cluster_member_ids": list(cluster_member_ids),"cluster_radius": list(cluster_radius)})
  
