@@ -409,7 +409,7 @@ class low_memory_index:
 
         shift = self.dim+1
 
-        print(node_data)
+        #print(node_data)
         for i in range(self.max_cluster_number):
             
             cluster_id = int(node_data[shift])
