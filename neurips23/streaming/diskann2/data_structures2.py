@@ -22,8 +22,8 @@ class Node:
         self.neighbor_ids = []
         self.alpha = alpha
         self.index = index
-        self.max_cluster_number = max_cluster_number
-        self.clusters = []
+
+        self.neighbor_vectors = []
 
 
     def remove_deleted_neighbors(self):
@@ -32,12 +32,17 @@ class Node:
             #neighbor = self.index.get_node(neighbor_id)
             if neighbor_id not in self.index.node_ids:
                 self.neighbor_ids.pop(i)
+                self.neighbor_vectors.pop(i)
 
     def add_neighbor(self, new_neighbor_id):
 
-        
-        self.neighbor_ids.append(new_neighbor_id)
-        self.neighbor_ids = list(set(self.neighbor_ids))
+        if new_neighbor_id not in self.neighbor_ids:
+            self.neighbor_ids.append(new_neighbor_id)
+            self.neighbor_vectors.append(self.index.get_node(new_neighbor_id).get_vector())
+        else:
+            return
+        #self.neighbor_ids = list(set(self.neighbor_ids))
+
 
         if len(self.neighbor_ids) > self.max_neighbors:
             self.remove_deleted_neighbors()
@@ -47,8 +52,15 @@ class Node:
 
     def add_neighbors(self, new_neighbor_ids):
 
-        self.neighbor_ids = self.neighbor_ids + new_neighbor_ids
-        self.neighbor_ids = list(set(self.neighbor_ids))
+        #self.neighbor_ids = self.neighbor_ids + new_neighbor_ids
+        #self.neighbor_ids = list(set(self.neighbor_ids))
+        for new_neighbor_id in new_neighbor_ids:
+            if new_neighbor_id not in self.neighbor_ids:
+                self.neighbor_ids.append(new_neighbor_id)
+                self.neighbor_vectors.append(self.index.get_node(new_neighbor_id).get_vector())
+            else:
+                continue
+
         if len(self.neighbor_ids) > self.max_neighbors:
             self.remove_deleted_neighbors()
             self.prune_neighbors()
@@ -106,6 +118,12 @@ class Node:
         if neighbor_id in self.neighbor_ids:
             self.neighbor_ids.remove(neighbor_id)
         
+        for i in range(len(self.neighbor_ids)):
+            if self.neighbor_ids[i] == neighbor_id:
+                self.neighbor_ids.pop(i)
+                self.neighbor_vectors.pop(i)
+                break
+        
   
         
     def get_neighbor_ids(self):
@@ -121,25 +139,13 @@ class Node:
     def get_id(self):
         return self.node_id
     
-    def get_clusters(self):
-        return self.clusters
-
     def get_distance(self, other_vector):
         #print(len(self.vector))
         #print(len(other_vector))
         
         return np.sum(np.square(np.array(self.vector) - np.array(other_vector)))
         #np.linalg.norm(np.array(self.vector) - np.array(other_vector))
-    
-    def get_neighbor_distance(self, neighbor_id, vector):
-        for cluster in self.clusters:
-            if neighbor_id in cluster["cluster_member_ids"]:
-                radius = cluster["cluster_radius"][cluster["cluster_member_ids"].index(neighbor_id)]
-                d = np.linalg.norm(np.array(vector) - np.array(cluster["medoid"]))
-                return abs(d-radius),d+radius
 
-        return None
-    
 
 
 
@@ -170,9 +176,9 @@ class diskann2_index:
         self.node_buffer = {}
 
         self.pq_size = self.dim
-        self.max_cluster_number = self.max_neighbors#max_cluster_number
 
-        self.node_size = 1+ self.dim + self.max_neighbors*2 + self.max_cluster_number*(2+self.pq_size) 
+        self.node_size = 1+ self.dim + self.max_neighbors *(1+self.pq_size)
+
 
         try:
             '''
@@ -271,25 +277,16 @@ class diskann2_index:
   
         with open(self.index_file, 'rb+') as f:
             f.seek(node_id *self.node_size*4)
-            clusters = node.get_clusters()
+            
 
             node_data = np.append([node.get_id()], node.get_vector())
             
-
-            for cluster_id in range(len(node.clusters)):
-                cluster = clusters[cluster_id]
-                node_data =np.append(node_data,cluster_id)
-                node_data =np.append(node_data,len(cluster["cluster_member_ids"]))
-                #print(f'cluster_size {len(cluster["cluster_member_ids"])}')
-                node_data =np.append(node_data,cluster["medoid"])
-                node_data =np.append(node_data,cluster["cluster_member_ids"])
-                node_data = np.append(node_data,cluster["cluster_radius"])
-
-                #print(f"dump cluster {cluster['cluster_member_ids']}")
-                #print(f"dump cluster {cluster['cluster_radius']}")
-                
-            if len(node_data) > self.node_size:
-                print("node size too large!")
+            for i in range(len(node.neighbor_ids)):
+                neighbor_id = node.neighbor_ids[i]
+                neighbor_vector = node.neighbor_vectors[i]
+                node_data = np.append(node_data,neighbor_id)
+                node_data = np.append(node_data,neighbor_vector)
+             
 
            
             #padding within node with -1s
@@ -300,6 +297,8 @@ class diskann2_index:
                         
             f.write(node_data.astype(np.float32).tobytes())
 
+        self.remove_from_node_w_buffer(node)
+
 
         #self.index_file_rw_lock.release_write()
 
@@ -307,14 +306,9 @@ class diskann2_index:
         for node_id in self.node_w_buffer:
             node = self.node_buffer[node_id]
             self.dump_changed_node(node)
-            self.node_w_buffer.remove(node_id)
-
-            if node.get_id() in self.node_buffer and node_id not in self.node_r_buffer:
-                del self.node_buffer[node_id]
-            
-            self.dump_changed_node(node)
+        
+     
            
-
 
     def dump_meta_data(self):
         with open(self.meta_data_file, 'w') as f:
@@ -336,32 +330,23 @@ class diskann2_index:
                 return None
         #self.index_file_rw_lock.release_read()
         
+        node_id_on_file = int(node_data[0])
+        if node_id_on_file != node_id:
+            return None
         vector = node_data[1:self.dim+1]
         node = Node(vector, node_id, self,self.max_neighbors)
 
         shift = self.dim+1
 
-        #print(node_data)
-        for i in range(self.max_cluster_number):
-            
-            cluster_id = int(node_data[shift])
-            if cluster_id == -1:
+        for i in range(self.max_neighbors):
+            neighbor_id = int(node_data[shift])
+            if neighbor_id == -1:
                 break
-            cluster_size = int(node_data[shift+1])
-            cluster_medoid = node_data[shift+2:shift+2+self.pq_size]
-            cluster_member_ids = node_data[shift+2+self.pq_size:shift+2+self.pq_size+cluster_size]
-            cluster_member_ids = [int(cluster_member_id) for cluster_member_id in cluster_member_ids]
+            neighbor_vector = node_data[shift+1:shift+1+self.pq_size]
+            node.add_neighbor(neighbor_id)
+            node.neighbor_vectors.append(neighbor_vector)
 
-            
-
-            node.neighbor_ids = node.neighbor_ids + cluster_member_ids
-
-            cluster_radius = node_data[shift+2+self.pq_size+cluster_size:shift+2+self.pq_size+cluster_size*2]
-
-            node.clusters.append({"medoid": cluster_medoid, "cluster_member_ids": cluster_member_ids,"cluster_radius": cluster_radius})
-           
-
-            shift = shift + 2 + self.pq_size + cluster_size*2
+            shift = shift + 1 + self.pq_size
 
         self.add_to_node_r_buffer(node)
 
