@@ -148,6 +148,14 @@ class Node:
         return np.sum(np.square(np.array(self.vector) - np.array(other_vector)))
         #np.linalg.norm(np.array(self.vector) - np.array(other_vector))
 
+    def get_neighbor_distance(self, neighbor_id, vector):
+        for i in range(len(self.neighbor_ids)):
+            if neighbor_id == self.neighbor_ids[i]:
+                return np.sum(np.square(np.array(self.neighbor_vectors[i]) - np.array(vector)))
+    
+        return None
+    
+
 
 
 
@@ -493,12 +501,12 @@ class diskann2_index:
 
         rand_idx = random.randint(0,len(self.node_ids)-1)
         start_node_id = list(self.node_ids.keys())[rand_idx]
-
         start_node = self.get_node(start_node_id)
+
         dis = start_node.get_distance(query_vector)
         to_visit = [ start_node_id]
 
-        to_visit_distances = {start_node_id:(dis,dis)}
+        to_visit_distances = {start_node_id:dis}
 
         
         #heapq.heapify(to_visit)
@@ -512,7 +520,7 @@ class diskann2_index:
         while len(visited) < max_visits:
   
 
-            to_visit.sort(key=lambda x: (to_visit_distances[x][0]+to_visit_distances[x][1])/2)
+            to_visit.sort(key=lambda x: (to_visit_distances[x]))
 
             to_visit = to_visit[:L]
 
@@ -531,8 +539,7 @@ class diskann2_index:
             
 
             current_node = self.get_node(current_node_id)
-            real_distance = current_node.get_distance(query_vector)
-            to_visit_distances[current_node_id] = (real_distance,real_distance)
+
      
 
             neighbor_ids = current_node.get_neighbor_ids()
@@ -542,15 +549,11 @@ class diskann2_index:
                     continue
                 if neighbor_id not in self.node_ids:
                     continue
-                neighbor_distance_a, neighbor_distance_b = current_node.get_neighbor_distance(neighbor_id,query_vector)
+                neighbor_distance = current_node.get_neighbor_distance(neighbor_id,query_vector)
 
                 if neighbor_id not in to_visit_distances:
-                    to_visit_distances[neighbor_id] = (neighbor_distance_a,neighbor_distance_b)
+                    to_visit_distances[neighbor_id] = neighbor_distance
                     to_visit.append(neighbor_id)
-
-                else:
-                    to_visit_distances[neighbor_id] = (max(neighbor_distance_a,to_visit_distances[neighbor_id][0]),min(neighbor_distance_b,to_visit_distances[neighbor_id][1]))
-                
 
             
 
