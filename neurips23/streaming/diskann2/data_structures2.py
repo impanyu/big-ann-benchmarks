@@ -37,8 +37,9 @@ class Node:
     def add_neighbor(self, new_neighbor_id):
 
         if new_neighbor_id not in self.neighbor_ids:
-            self.neighbor_ids.append(new_neighbor_id)
-            self.neighbor_vectors.append(self.index.get_node(new_neighbor_id).get_vector())
+            if new_neighbor_id in self.index.node_ids:
+                self.neighbor_ids.append(new_neighbor_id)
+                self.neighbor_vectors.append(self.index.get_node(new_neighbor_id).get_vector())
         else:
             return
         #self.neighbor_ids = list(set(self.neighbor_ids))
@@ -56,8 +57,9 @@ class Node:
         #self.neighbor_ids = list(set(self.neighbor_ids))
         for new_neighbor_id in new_neighbor_ids:
             if new_neighbor_id not in self.neighbor_ids:
-                self.neighbor_ids.append(new_neighbor_id)
-                self.neighbor_vectors.append(self.index.get_node(new_neighbor_id).get_vector())
+                if new_neighbor_id in self.index.node_ids:
+                    self.neighbor_ids.append(new_neighbor_id)
+                    self.neighbor_vectors.append(self.index.get_node(new_neighbor_id).get_vector())
             else:
                 continue
 
@@ -343,7 +345,7 @@ class diskann2_index:
             if neighbor_id == -1:
                 break
             neighbor_vector = node_data[shift+1:shift+1+self.pq_size]
-            node.add_neighbor(neighbor_id)
+            node.neighbor_ids.append(neighbor_id)
             node.neighbor_vectors.append(neighbor_vector)
 
             shift = shift + 1 + self.pq_size
