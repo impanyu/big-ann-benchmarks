@@ -68,52 +68,61 @@ class Node:
             self.prune_neighbors()
      
     def find_nearest_neighbors(self):
-        start_time = time.time()
+        #start_time = time.time()
         priority_queue = []
         heapq.heapify(priority_queue)
-        for neighbor_id in self.neighbor_ids:
-            neighbor = self.index.get_node(neighbor_id)
+        for i in range(len(self.neighbor_ids)):
+            neighbor_id = self.neighbor_ids[i]
+            neighbor_vector = self.neighbor_vectors[i]
   
-            distance = self.get_distance(neighbor.get_vector())
+            distance = self.get_distance(neighbor_vector)
             heapq.heappush(priority_queue, (distance, neighbor_id))
         if len(priority_queue) == 0:
             return None, None
         distance, nearest_neighbor_id = heapq.heappop(priority_queue)
-        end_time = time.time()
+        #end_time = time.time()
         #print("find nearest neighbors time: ", end_time - start_time)
         return distance,nearest_neighbor_id
     
     #
     def prune_neighbors(self):
-        start_time = time.time()
+        #start_time = time.time()
         neighbor_ids = []
+        neighbor_vectors = []
         while len(self.neighbor_ids) > 0:
             distance, nearest_neighbor_id = self.find_nearest_neighbors()
             if nearest_neighbor_id is None:
                 break
 
+            nearest_neighbor_vector = self.neighbor_vectors[self.neighbor_ids.index(nearest_neighbor_id)]
 
-            nearest_neighbor = self.index.get_node(nearest_neighbor_id)
+
+            #nearest_neighbor = self.index.get_node(nearest_neighbor_id)
             neighbor_ids.append(nearest_neighbor_id)
+            neighbor_vectors.append(nearest_neighbor_vector)
+
             if len(neighbor_ids) >= self.max_neighbors:
                 break
 
             for i in range(len(self.neighbor_ids)-1,-1,-1):
                 neighbor_id = self.neighbor_ids[i]
-                neighbor = self.index.get_node(neighbor_id)
-                if neighbor is None:
+                #neighbor = self.index.get_node(neighbor_id)
+                #if neighbor is None:
                     #self.neighbor_ids.remove(neighbor_id)
-                    continue
+                #    continue
 
-                distance_1 = nearest_neighbor.get_distance(neighbor.get_vector())
-                distance_2 = self.get_distance(neighbor.get_vector())
+                distance_1 = self.get_neighbor_distance(neighbor_id, nearest_neighbor_vector)
+                distance_2 = self.get_distance(self.neighbor_vectors[i])
 
                 if self.alpha * distance_1 <= distance_2:
                     self.neighbor_ids.pop(i)
+                    self.neighbor_vectors.pop(i)
+                    
      
   
         self.neighbor_ids = neighbor_ids
-        end_time = time.time()
+        self.neighbor_vectors = neighbor_vectors
+        #end_time = time.time()
         #print("prune time: ", end_time - start_time)
 
     def remove_neighbor(self, neighbor_id):
