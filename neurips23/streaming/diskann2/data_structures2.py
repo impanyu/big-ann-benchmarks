@@ -437,7 +437,7 @@ class diskann2_index:
                 
                     self.add_to_node_w_buffer(neighbor)
 
-        #print(new_node.get_neighbor_ids())      
+        print(new_node.get_neighbor_ids())      
         #print(f"add neighbors time: {end_time_2-start_time_2}")
 
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
@@ -452,7 +452,7 @@ class diskann2_index:
 
    
     #in some case delete_node may not delete the link pointing to the deleted node, so deleted node may still be in the neighbor list of other nodes
-    def delete_node(self, node_id):
+    def delete_node(self, deleted_node_id):
         #w_lock = self.marker.gen_wlock()
         #w_lock.acquire()
 
@@ -460,10 +460,10 @@ class diskann2_index:
     
         #print("deleting node")
         
-        if node_id not in self.node_ids:
+        if deleted_node_id not in self.node_ids:
             return 
         
-        deleted_node = self.get_node(node_id)
+        deleted_node = self.get_node(deleted_node_id)
         #page.get_lock().release_write()
 
         
@@ -472,10 +472,10 @@ class diskann2_index:
         #self.changed_pages[page_id] = page
         #with self.available_node_ids_lock:
         with self.lock:
-            self.available_node_ids["deleted_node_ids"].append(node_id)
+            self.available_node_ids["deleted_node_ids"].append(deleted_node_id)
             self.remove_from_node_r_buffer(deleted_node)
             self.remove_from_node_w_buffer(deleted_node)
-            del self.node_ids[node_id]
+            del self.node_ids[deleted_node_id]
 
     
         # iterate through all the neighbors of the node and remove the node from their neighbor list
@@ -488,8 +488,8 @@ class diskann2_index:
 
                 neighbor = self.get_node(neighbor_id)
                 
-                if node_id in neighbor.get_neighbor_ids():
-                    neighbor.remove_neighbor(node_id)
+                if deleted_node_id in neighbor.get_neighbor_ids():
+                    neighbor.remove_neighbor(deleted_node_id)
                     other_neighbor_ids =[other_neighbor_id for other_neighbor_id in deleted_node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
                     neighbor.add_neighbors(other_neighbor_ids)
 
@@ -572,7 +572,7 @@ class diskann2_index:
 
 
 
-        top_k_node_ids = [to_visit[i] for i in range(min(k,len(to_visit)))]
+        top_k_node_ids = to_visit[:k]
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
 
