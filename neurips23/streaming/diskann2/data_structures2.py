@@ -490,11 +490,10 @@ class diskann2_index:
         #w_lock.release()
 
     def search(self, query_vector, start_node_id, k, L, max_visits):
-        start_time = time.time()
+        #start_time = time.time()
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
-        if len(self.node_ids) == 0:
-            
+        if len(self.node_ids) == 0:    
             return [],[]
         
 
@@ -565,7 +564,7 @@ class diskann2_index:
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
 
-        end_time = time.time()
+        #end_time = time.time()
         #print("search time: ", end_time - start_time)
         #print(len(visited))
         return top_k_node_ids,list(visited)
