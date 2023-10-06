@@ -436,7 +436,7 @@ class diskann2_index:
         #w_lock.release()
         end_time = time.time()
         
-        print(f"insert {new_node_id} time: {end_time-start_time}")
+        #print(f"insert {new_node_id} time: {end_time-start_time}")
 
 
 
