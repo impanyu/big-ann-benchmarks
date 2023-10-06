@@ -126,8 +126,6 @@ class Node:
         #print("prune time: ", end_time - start_time)
 
     def remove_neighbor(self, neighbor_id):
-        if neighbor_id in self.neighbor_ids:
-            self.neighbor_ids.remove(neighbor_id)
         
         for i in range(len(self.neighbor_ids)):
             if self.neighbor_ids[i] == neighbor_id:
