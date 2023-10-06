@@ -527,7 +527,7 @@ class diskann2_index:
             for i in range(len(to_visit)):
                 current_node_id = to_visit[i]
                 if current_node_id not in visited:
-                    continue
+                    break
 
             if i == len(to_visit)-1 and current_node_id in visited:
                 break
