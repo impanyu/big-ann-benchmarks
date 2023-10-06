@@ -378,7 +378,7 @@ class diskann2_index:
         #w_lock = self.marker.gen_rlock()
         #w_lock.acquire()
         print(f"insert {new_node_id}")
-        start_time = time.time()
+        #start_time = time.time()
         
 
         if new_node_id is None:
@@ -427,14 +427,14 @@ class diskann2_index:
                 
                     self.add_to_node_w_buffer(neighbor)
 
-                
+        print(new_node.get_neighbor_ids())      
         #print(f"add neighbors time: {end_time_2-start_time_2}")
 
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
         #print("after add neighbors")
         #self.rw_lock.release_write()
         #w_lock.release()
-        end_time = time.time()
+        #end_time = time.time()
         
         #print(f"insert {new_node_id} time: {end_time-start_time}")
 
@@ -554,9 +554,9 @@ class diskann2_index:
                     continue
                 neighbor_distance = current_node.get_neighbor_distance(neighbor_id,query_vector)
 
-                if neighbor_id not in to_visit_distances:
-                    to_visit_distances[neighbor_id] = neighbor_distance
-                    to_visit.append(neighbor_id)
+                #if neighbor_id not in to_visit_distances:
+                to_visit_distances[neighbor_id] = neighbor_distance
+                to_visit.append(neighbor_id)
 
             
 
