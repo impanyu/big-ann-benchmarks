@@ -252,7 +252,8 @@ class diskann2_index:
         self.node_buffer[node.get_id()] = node
 
         if len(self.node_w_buffer) >= self.node_buffer_size:
-            self.dump_changed_nodes()
+            pass
+            #self.dump_changed_nodes()
 
     def remove_from_node_w_buffer(self,node):
         #with self.page_buffer_lock:
