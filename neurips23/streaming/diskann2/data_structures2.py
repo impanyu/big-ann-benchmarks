@@ -516,7 +516,7 @@ class diskann2_index:
         #num_visits = 0
     
 
-        while True:#len(visited) < max_visits:
+        while True: #len(visited) < max_visits:
   
 
             to_visit.sort(key=lambda x: (to_visit_distances[x]))
