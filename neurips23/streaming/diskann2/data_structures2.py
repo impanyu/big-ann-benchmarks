@@ -358,7 +358,7 @@ class diskann2_index:
 
             shift = shift + 1 + self.pq_size
 
-        self.add_to_node_r_buffer(node)
+        #self.add_to_node_r_buffer(node)
 
         return node
     
@@ -368,8 +368,8 @@ class diskann2_index:
             return self.node_buffer[node_id]
         else:
             node = self.get_node_from_file(node_id)
-            if not node is None:
-                self.add_to_node_r_buffer(node)
+            #if not node is None:
+            #    self.add_to_node_r_buffer(node)
             return node
 
 
@@ -539,6 +539,8 @@ class diskann2_index:
             
 
             current_node = self.get_node(current_node_id)
+            with self.lock:
+                self.add_to_node_r_buffer(current_node)
 
      
 
