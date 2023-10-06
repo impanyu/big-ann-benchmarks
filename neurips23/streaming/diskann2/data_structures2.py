@@ -160,7 +160,7 @@ class Node:
 
 
 class diskann2_index:
-    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=200, nodes_per_page=20, node_buffer_size=1000, max_ios_per_hop = 3,max_cluster_number = 8):
+    def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, node_buffer_size=1000, max_ios_per_hop = 3,max_cluster_number = 8):
         self.k = k
         self.L = L
         self.max_visits = max_visits
