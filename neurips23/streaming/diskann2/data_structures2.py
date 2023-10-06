@@ -117,8 +117,10 @@ class Node:
                 if self.alpha * distance_1 <= distance_2:
                     self.neighbor_ids.pop(i)
                     self.neighbor_vectors.pop(i)
-                    
-     
+        
+
+        if not len(self.neighbor_ids) == len(self.neighbor_vectors):
+            print("not equal!")
   
         self.neighbor_ids = neighbor_ids
         self.neighbor_vectors = neighbor_vectors
