@@ -437,7 +437,7 @@ class diskann2_index:
                 
                     self.add_to_node_w_buffer(neighbor)
 
-        print(new_node.get_neighbor_ids())      
+        #print(new_node.get_neighbor_ids())      
         #print(f"add neighbors time: {end_time_2-start_time_2}")
 
                     #self.changed_pages[neighbor_page_id] = self.get_page(neighbor_page_id)
