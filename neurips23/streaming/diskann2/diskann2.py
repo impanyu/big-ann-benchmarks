@@ -26,7 +26,7 @@ class diskann2(BaseStreamingANN):
         index_file = "index.bin"
         meta_data_file = "meta_data.json"
 
-        self.index = diskann2_index(ndims, max_neighbors, index_file, meta_data_file, k=1, L=40, max_visits=200, nodes_per_page=20, node_buffer_size=1000, max_ios_per_hop = 3)
+        self.index = diskann2_index(ndims, max_neighbors, index_file, meta_data_file, k=1, L=100, max_visits=200, nodes_per_page=20, node_buffer_size=1000, max_ios_per_hop = 3)
 
       
 
