@@ -564,9 +564,9 @@ class diskann2_index:
                     continue
                 neighbor_distance = current_node.get_neighbor_distance(neighbor_id,query_vector)
 
-                #if neighbor_id not in to_visit_distances:
-                to_visit_distances[neighbor_id] = neighbor_distance
-                to_visit.append(neighbor_id)
+                if neighbor_id not in to_visit:
+                    to_visit_distances[neighbor_id] = neighbor_distance
+                    to_visit.append(neighbor_id)
 
             
 
