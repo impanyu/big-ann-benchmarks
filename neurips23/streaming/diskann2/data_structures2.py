@@ -411,7 +411,7 @@ class diskann2_index:
         #w_lock = self.marker.gen_wlock()
         #w_lock.acquire()
 
-        print(f"delete {node_id}")
+        print(f"delete {deleted_node_id}")
     
         #print("deleting node")
         
