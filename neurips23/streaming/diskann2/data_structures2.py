@@ -575,7 +575,7 @@ class diskann2_index:
         top_k_node_ids = to_visit[:k]
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
-        print(top_k_node_ids)
+        print(to_visit)
 
         #end_time = time.time()
         #print("search time: ", end_time - start_time)
