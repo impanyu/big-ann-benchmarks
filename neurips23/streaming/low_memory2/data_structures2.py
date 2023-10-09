@@ -23,7 +23,7 @@ class Node:
         self.alpha = alpha
         self.index = index
 
-        #self.neighbor_vectors = []
+        self.neighbor_vectors = []
 
 
     def remove_deleted_neighbors(self):
@@ -32,14 +32,14 @@ class Node:
             #neighbor = self.index.get_node(neighbor_id)
             if neighbor_id not in self.index.node_ids:
                 self.neighbor_ids.pop(i)
-                #self.neighbor_vectors.pop(i)
+                self.neighbor_vectors.pop(i)
 
     def add_neighbor(self, new_neighbor_id):
 
         if new_neighbor_id not in self.neighbor_ids:
             if new_neighbor_id in self.index.node_ids:
                 self.neighbor_ids.append(new_neighbor_id)
-                #self.neighbor_vectors.append(self.index.get_node(new_neighbor_id).get_vector())
+                self.neighbor_vectors.append(self.index.get_node(new_neighbor_id).get_vector())
         else:
             return
         #self.neighbor_ids = list(set(self.neighbor_ids))
@@ -59,7 +59,7 @@ class Node:
             if new_neighbor_id not in self.neighbor_ids:
                 if new_neighbor_id in self.index.node_ids:
                     self.neighbor_ids.append(new_neighbor_id)
-                    #self.neighbor_vectors.append(self.index.get_node(new_neighbor_id).get_vector())
+                    self.neighbor_vectors.append(self.index.get_node(new_neighbor_id).get_vector())
             else:
                 continue
 
@@ -73,16 +73,10 @@ class Node:
         heapq.heapify(priority_queue)
         for i in range(len(self.neighbor_ids)):
             neighbor_id = self.neighbor_ids[i]
-            #neighbor_vector = self.neighbor_vectors[i]
-
-            if neighbor_id not in self.index.node_ids:
-                continue
-
-            neighbor_vector = self.index.get_node(neighbor_id).get_vector()
-
+            neighbor_vector = self.neighbor_vectors[i]
+  
             distance = self.get_distance(neighbor_vector)
             heapq.heappush(priority_queue, (distance, neighbor_id))
-
         if len(priority_queue) == 0:
             return None, None
         distance, nearest_neighbor_id = heapq.heappop(priority_queue)
@@ -90,45 +84,46 @@ class Node:
         #print("find nearest neighbors time: ", end_time - start_time)
         return distance,nearest_neighbor_id
     
-    
+    #
     def prune_neighbors(self):
         #start_time = time.time()
         neighbor_ids = []
-        #neighbor_vectors = []
+        neighbor_vectors = []
         while len(self.neighbor_ids) > 0:
             distance, nearest_neighbor_id = self.find_nearest_neighbors()
             if nearest_neighbor_id is None:
                 break
 
-            nearest_neighbor = self.index.get_node(nearest_neighbor_id)
-            #nearest_neighbor_vector = self.neighbor_vectors[self.neighbor_ids.index(nearest_neighbor_id)]
+            nearest_neighbor_vector = self.neighbor_vectors[self.neighbor_ids.index(nearest_neighbor_id)]
 
 
             #nearest_neighbor = self.index.get_node(nearest_neighbor_id)
             neighbor_ids.append(nearest_neighbor_id)
-            #neighbor_vectors.append(nearest_neighbor_vector)
+            neighbor_vectors.append(nearest_neighbor_vector)
 
             if len(neighbor_ids) >= self.max_neighbors:
                 break
 
             for i in range(len(self.neighbor_ids)-1,-1,-1):
                 neighbor_id = self.neighbor_ids[i]
-                
-                neighbor = self.index.get_node(neighbor_id)
+                #neighbor = self.index.get_node(neighbor_id)
                 #if neighbor is None:
                     #self.neighbor_ids.remove(neighbor_id)
                 #    continue
 
-                distance_1 = neighbor.get_distance(neighbor.get_vector())
-                distance_2 = self.get_distance(neighbor.get_vector())
+                distance_1 = self.get_neighbor_distance(neighbor_id, nearest_neighbor_vector)
+                distance_2 = self.get_distance(self.neighbor_vectors[i])
 
                 if self.alpha * distance_1 <= distance_2:
                     self.neighbor_ids.pop(i)
-                    #self.neighbor_vectors.pop(i)
+                    self.neighbor_vectors.pop(i)
         
 
+        if not len(self.neighbor_ids) == len(self.neighbor_vectors):
+            print("not equal!")
   
         self.neighbor_ids = neighbor_ids
+        self.neighbor_vectors = neighbor_vectors
         #end_time = time.time()
         #print("prune time: ", end_time - start_time)
 
@@ -137,7 +132,7 @@ class Node:
         for i in range(len(self.neighbor_ids)):
             if self.neighbor_ids[i] == neighbor_id:
                 self.neighbor_ids.pop(i)
-                #self.neighbor_vectors.pop(i)
+                self.neighbor_vectors.pop(i)
                 break
         
   
@@ -162,7 +157,13 @@ class Node:
         return np.sum(np.square(np.array(self.vector) - np.array(other_vector)))
         #np.linalg.norm(np.array(self.vector) - np.array(other_vector))
 
-
+    def get_neighbor_distance(self, neighbor_id, vector):
+        for i in range(len(self.neighbor_ids)):
+            if neighbor_id == self.neighbor_ids[i]:
+                return np.sum(np.square(np.array(self.neighbor_vectors[i]) - np.array(vector)))
+    
+        return None
+    
 
 
 
@@ -195,7 +196,7 @@ class diskann2_index:
 
         self.pq_size = self.dim
 
-        self.node_size = 1+ self.dim + self.max_neighbors 
+        self.node_size = 1+ self.dim + self.max_neighbors *(1+self.pq_size)
 
 
         try:
@@ -302,9 +303,9 @@ class diskann2_index:
             
             for i in range(len(node.neighbor_ids)):
                 neighbor_id = node.neighbor_ids[i]
-                #neighbor_vector = node.neighbor_vectors[i]
+                neighbor_vector = node.neighbor_vectors[i]
                 node_data = np.append(node_data,neighbor_id)
-                #node_data = np.append(node_data,neighbor_vector)
+                node_data = np.append(node_data,neighbor_vector)
              
 
            
@@ -361,11 +362,11 @@ class diskann2_index:
             neighbor_id = int(node_data[shift])
             if neighbor_id == -1:
                 break
-            #neighbor_vector = node_data[shift+1:shift+1+self.pq_size]
+            neighbor_vector = node_data[shift+1:shift+1+self.pq_size]
             node.neighbor_ids.append(neighbor_id)
-            #node.neighbor_vectors.append(neighbor_vector)
+            node.neighbor_vectors.append(neighbor_vector)
 
-            shift = shift + 1 
+            shift = shift + 1 + self.pq_size
 
         #self.add_to_node_r_buffer(node)
 
@@ -561,8 +562,7 @@ class diskann2_index:
                     continue
                 if neighbor_id not in self.node_ids:
                     continue
-                neighbor = self.get_node(neighbor_id)
-                neighbor_distance = neighbor.get_distance(query_vector)
+                neighbor_distance = current_node.get_neighbor_distance(neighbor_id,query_vector)
 
                 if neighbor_id not in to_visit:
                     to_visit_distances[neighbor_id] = neighbor_distance
