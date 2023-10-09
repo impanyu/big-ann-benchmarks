@@ -45,10 +45,10 @@ class Node:
         #self.neighbor_ids = list(set(self.neighbor_ids))
 
 
-        if len(self.neighbor_ids) > self.max_neighbors:
+        #if len(self.neighbor_ids) > self.max_neighbors:
             #self.remove_deleted_neighbors()
             #self.prune_neighbors()
-            self.neighbor_ids = self.neighbor_ids[:self.max_neighbors]
+            
 
         
      
@@ -65,10 +65,10 @@ class Node:
             else:
                 continue
 
-        if len(self.neighbor_ids) > self.max_neighbors:
+        #if len(self.neighbor_ids) > self.max_neighbors:
             #self.remove_deleted_neighbors()
             #self.prune_neighbors()
-            self.neighbor_ids = self.neighbor_ids[:self.max_neighbors]
+           
      
     def find_nearest_neighbors(self):
         #start_time = time.time()
