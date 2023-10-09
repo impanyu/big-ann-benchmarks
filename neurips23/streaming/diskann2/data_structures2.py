@@ -14,7 +14,7 @@ from sklearn.cluster import KMeans
 
     
 class Node:
-    def __init__(self, vector, node_id,index, max_neighbors=50, alpha=1.2, max_cluster_number=8):
+    def __init__(self, vector, node_id,index, max_neighbors=50, alpha=12, max_cluster_number=8):
         self.vector = vector #list of floating point numbers
         self.node_id = node_id
         self.max_neighbors = max_neighbors
