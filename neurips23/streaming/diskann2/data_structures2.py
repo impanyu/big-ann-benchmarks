@@ -565,8 +565,7 @@ class diskann2_index:
                 if neighbor_id not in self.node_ids:
                     continue
                 neighbor = self.get_node(neighbor_id)
-                with self.lock:
-                    self.add_to_node_r_buffer(neighbor)
+           
 
                 neighbor_distance = neighbor.get_distance(query_vector)
 
