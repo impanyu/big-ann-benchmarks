@@ -453,7 +453,7 @@ class diskann2_index:
         if len(self.node_ids) == 0:    
             return [],[]
         
-
+        print(self.node_ids)
 
         rand_idx = random.randint(0,len(self.node_ids)-1)
         start_node_id = list(self.node_ids.keys())[rand_idx]
