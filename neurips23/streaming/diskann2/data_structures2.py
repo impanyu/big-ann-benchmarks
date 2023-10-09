@@ -411,7 +411,7 @@ class diskann2_index:
         #w_lock = self.marker.gen_wlock()
         #w_lock.acquire()
 
-        #print(f"delete {node_id}")
+        print(f"delete {node_id}")
     
         #print("deleting node")
         
@@ -458,6 +458,7 @@ class diskann2_index:
         #start_time = time.time()
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
+        print(f"query vector {query_vector}")
         if len(self.node_ids) == 0:    
             return [],[]
         
