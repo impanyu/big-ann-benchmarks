@@ -22,7 +22,7 @@ class diskann2(BaseStreamingANN):
         ndims is the size of the dataset
         '''
         #raise NotImplementedError
-        max_neighbors = 50
+        max_neighbors = 40
         index_file = "index.bin"
         meta_data_file = "meta_data.json"
 
