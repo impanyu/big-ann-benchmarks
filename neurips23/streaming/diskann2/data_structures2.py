@@ -355,8 +355,7 @@ class diskann2_index:
 
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
 
-        with self.lock:
-            self.node_ids[new_node_id] = vector
+            
 
     
  
@@ -365,6 +364,7 @@ class diskann2_index:
         new_node.add_neighbors(list(visited_node_ids))
 
         with self.lock:
+            self.node_ids[new_node_id] = vector
             self.dump_changed_node(new_node)
 
 
