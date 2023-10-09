@@ -46,8 +46,10 @@ class Node:
 
 
         if len(self.neighbor_ids) > self.max_neighbors:
-            self.remove_deleted_neighbors()
-            self.prune_neighbors()
+            #self.remove_deleted_neighbors()
+            #self.prune_neighbors()
+            self.neighbor_ids = self.neighbor_ids[:self.max_neighbors]
+
         
      
 
@@ -64,8 +66,9 @@ class Node:
                 continue
 
         if len(self.neighbor_ids) > self.max_neighbors:
-            self.remove_deleted_neighbors()
-            self.prune_neighbors()
+            #self.remove_deleted_neighbors()
+            #self.prune_neighbors()
+            self.neighbor_ids = self.neighbor_ids[:self.max_neighbors]
      
     def find_nearest_neighbors(self):
         #start_time = time.time()
@@ -562,6 +565,9 @@ class diskann2_index:
                 if neighbor_id not in self.node_ids:
                     continue
                 neighbor = self.get_node(neighbor_id)
+                with self.lock:
+                    self.add_to_node_r_buffer(neighbor)
+
                 neighbor_distance = neighbor.get_distance(query_vector)
 
                 if neighbor_id not in to_visit:
@@ -575,7 +581,7 @@ class diskann2_index:
         top_k_node_ids = to_visit[:k]
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
-        print(to_visit)
+        
 
         #end_time = time.time()
         #print("search time: ", end_time - start_time)
