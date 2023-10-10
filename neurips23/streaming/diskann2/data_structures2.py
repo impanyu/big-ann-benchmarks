@@ -451,7 +451,7 @@ class diskann2_index:
         #start_time = time.time()
         # This priority queue will keep track of nodes to visit
         # Format is (distance, node)
-        print(f"query vector {query_vector}")
+        #print(f"query vector {query_vector}")
         if len(self.node_ids) == 0:    
             return [],[]
         
