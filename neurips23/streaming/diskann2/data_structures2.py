@@ -346,10 +346,10 @@ class diskann2_index:
         if new_node_id in self.node_ids:
             new_node = self.get_node(new_node_id)
             new_node.set_vector(vector)
-            with self.lock:
-                self.node_ids[new_node_id] = vector
+            
+            self.node_ids[new_node_id] = vector
    
-                self.dump_changed_node(new_node)
+            self.dump_changed_node(new_node)
             return
         
 
@@ -364,9 +364,9 @@ class diskann2_index:
         new_node.add_neighbors(list(visited_node_ids))
 
 
-        with self.lock:
-            self.node_ids[new_node_id] = vector
-            self.dump_changed_node(new_node)
+        
+        self.node_ids[new_node_id] = vector
+        self.dump_changed_node(new_node)
 
 
 
@@ -381,9 +381,9 @@ class diskann2_index:
                 neighbor = self.get_node(neighbor_id)
 
                 neighbor.add_neighbor(new_node_id)
-                with self.lock:
+                
             
-                    self.dump_changed_node(neighbor)
+                self.dump_changed_node(neighbor)
 
         #print(new_node.get_neighbor_ids())      
         #print(f"add neighbors time: {end_time_2-start_time_2}")
@@ -419,10 +419,10 @@ class diskann2_index:
 
         #self.changed_pages[page_id] = page
         #with self.available_node_ids_lock:
-        with self.lock:
-            self.available_node_ids["deleted_node_ids"].append(deleted_node_id)
+        
+        self.available_node_ids["deleted_node_ids"].append(deleted_node_id)
 
-            del self.node_ids[deleted_node_id]
+        del self.node_ids[deleted_node_id]
 
     
         # iterate through all the neighbors of the node and remove the node from their neighbor list
@@ -439,8 +439,8 @@ class diskann2_index:
                 neighbor.remove_neighbor(deleted_node_id)
                 other_neighbor_ids =[other_neighbor_id for other_neighbor_id in deleted_node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
                 neighbor.add_neighbors(other_neighbor_ids)
-                with self.lock:
-                    self.dump_changed_node(neighbor)
+                
+                self.dump_changed_node(neighbor)
 
        
         
