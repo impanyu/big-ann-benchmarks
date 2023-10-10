@@ -95,6 +95,7 @@ class Node:
                 break
 
             nearest_neighbor_vector = self.neighbor_vectors[self.neighbor_ids.index(nearest_neighbor_id)]
+            nearest_neighbor_vector = self.index.node_ids[nearest_neighbor_id]
 
 
             #nearest_neighbor = self.index.get_node(nearest_neighbor_id)
@@ -111,8 +112,13 @@ class Node:
                     #self.neighbor_ids.remove(neighbor_id)
                 #    continue
 
-                distance_1 = self.get_neighbor_distance(neighbor_id, nearest_neighbor_vector)
-                distance_2 = self.get_distance(self.neighbor_vectors[i])
+                #distance_1 = self.get_neighbor_distance(neighbor_id, nearest_neighbor_vector)
+                #distance_2 = self.get_distance(self.neighbor_vectors[i])
+
+                neighbor_vector = self.index.node_ids[neighbor_id]
+
+                distance_1 = np.sum(np.square(np.array(neighbor_vector) - np.array(nearest_neighbor_vector)))
+                distance_2 = self.get_distance(neighbor_vector)
 
                 if self.alpha * distance_1 <= distance_2:
                     self.neighbor_ids.pop(i)
