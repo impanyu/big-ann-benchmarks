@@ -428,19 +428,19 @@ class diskann2_index:
         # iterate through all the neighbors of the node and remove the node from their neighbor list
         # also add the neighbors of the node to the neighbor list of the neighbors to perserve the links: when a->delete_node and delete_node -> b, we add a->b
         #page.get_lock().acquire_read()
-            for neighbor_id in deleted_node.get_neighbor_ids():
-                
-                if neighbor_id not in self.node_ids:
-                    continue
+        for neighbor_id in deleted_node.get_neighbor_ids():
+            
+            if neighbor_id not in self.node_ids:
+                continue
 
-                neighbor = self.get_node(neighbor_id)
-                
-                if deleted_node_id in neighbor.get_neighbor_ids():
-                    neighbor.remove_neighbor(deleted_node_id)
-                    other_neighbor_ids =[other_neighbor_id for other_neighbor_id in deleted_node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
-                    neighbor.add_neighbors(other_neighbor_ids)
-                    with self.lock:
-                        self.dump_changed_node(neighbor)
+            neighbor = self.get_node(neighbor_id)
+            
+            if deleted_node_id in neighbor.get_neighbor_ids():
+                neighbor.remove_neighbor(deleted_node_id)
+                other_neighbor_ids =[other_neighbor_id for other_neighbor_id in deleted_node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
+                neighbor.add_neighbors(other_neighbor_ids)
+                with self.lock:
+                    self.dump_changed_node(neighbor)
 
        
         
