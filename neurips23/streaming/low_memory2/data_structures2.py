@@ -493,7 +493,9 @@ class low_memory_index:
                     continue
                 if neighbor_id not in self.node_ids:
                     continue
-                neighbor_distance = current_node.get_neighbor_distance(neighbor_id,query_vector)
+                #neighbor_distance = current_node.get_neighbor_distance(neighbor_id,query_vector)
+                neighbor_vector = self.node_ids[neighbor_id]
+                neighbor_distance = np.sum(np.square(np.array(neighbor_vector) - np.array(query_vector)))
 
                 if neighbor_id not in to_visit:
                     to_visit_distances[neighbor_id] = neighbor_distance

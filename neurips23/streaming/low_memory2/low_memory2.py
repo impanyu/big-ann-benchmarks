@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 class low_memory2(BaseStreamingANN):
     def __init__(self, metric, index_params):
-        self.name = "diskann2"
+        self.name = "low_memory2"
         self.insert_threads = index_params.get("insert_threads")
         self.delete_threads = self.insert_threads
     

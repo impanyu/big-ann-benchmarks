@@ -369,6 +369,10 @@ class diskann2_index:
         self.dump_changed_node(new_node)
 
 
+
+        
+            
+
         # add the new node to the neighbor list of the neighbors
         for neighbor_id in new_node.get_neighbor_ids():
             
