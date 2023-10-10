@@ -74,6 +74,8 @@ class Node:
         for i in range(len(self.neighbor_ids)):
             neighbor_id = self.neighbor_ids[i]
             neighbor_vector = self.neighbor_vectors[i]
+
+            neighbor_vector = self.index.node_ids[neighbor_id]
   
             distance = self.get_distance(neighbor_vector)
             heapq.heappush(priority_queue, (distance, neighbor_id))
