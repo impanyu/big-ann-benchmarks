@@ -119,8 +119,6 @@ class Node:
                     self.neighbor_vectors.pop(i)
         
 
-        if not len(self.neighbor_ids) == len(self.neighbor_vectors):
-            print("not equal!")
   
         self.neighbor_ids = neighbor_ids
         self.neighbor_vectors = neighbor_vectors
@@ -168,7 +166,7 @@ class Node:
 
 
 
-class diskann2_index:
+class low_memory_index:
     def __init__(self, dim, max_neighbors, index_file, meta_data_file, k=5, L=50, max_visits=1000, nodes_per_page=20, node_buffer_size=1000, max_ios_per_hop = 3,max_cluster_number = 8):
         self.k = k
         self.L = L
@@ -182,17 +180,11 @@ class diskann2_index:
 
         self.node_ids = {}
 
-        self.node_w_buffer = []
-        self.node_r_buffer = []
-
-
         self.marker = rwlock.RWLockFair()
         # Create a lock
         self.lock = threading.Lock()
 
   
-        self.node_buffer_size = node_buffer_size
-        self.node_buffer = {}
 
         self.pq_size = self.dim
 
@@ -224,59 +216,6 @@ class diskann2_index:
         except Exception as e:
             print(f"An error occurred: {e}")
 
-
-
-    def add_to_node_r_buffer(self,node):
-        #with self.page_buffer_lock:
-        for i in range(len(self.node_r_buffer)):
-            if node.get_id() == self.node_r_buffer[i]:
-                self.node_r_buffer.pop(i)
-                break
-
-        self.node_r_buffer.append(node.get_id())
-        self.node_buffer[node.get_id()] = node
-
-        # remove the first node from the buffer if the buffer is full
-        if len(self.node_r_buffer) > self.node_buffer_size:
-            popped_node_id = self.node_r_buffer.pop(0)
-            if popped_node_id not in self.node_w_buffer:
-                del self.node_buffer[popped_node_id]
-
-    def add_to_node_w_buffer(self,node):
-        #with self.page_buffer_lock:
-        for i in range(len(self.node_w_buffer)):
-            if node.get_id() == self.node_w_buffer[i]:
-                return
-
-        self.node_w_buffer.append(node.get_id())
-        self.node_buffer[node.get_id()] = node
-
-        if len(self.node_w_buffer) >= self.node_buffer_size:
-            pass
-            #self.dump_changed_nodes()
-
-    def remove_from_node_w_buffer(self,node):
-        #with self.page_buffer_lock:
-        
-
-        for i in range(len(self.node_w_buffer)):
-            if node.get_id() == self.node_w_buffer[i]:
-                self.node_w_buffer.pop(i)
-  
-                break
-
-        if node.get_id() in self.node_buffer and node.get_id() not in self.node_r_buffer:
-            del self.node_buffer[node.get_id()]
-    
-    def remove_from_node_r_buffer(self,node):
-        #with self.page_buffer_lock:
-        for i in range(len(self.node_r_buffer)):
-            if node.get_id() == self.node_r_buffer[i]:
-                self.node_r_buffer.pop(i)
-                break
-
-        if node.get_id() in self.node_buffer and node.get_id() not in self.node_w_buffer:
-            del self.node_buffer[node.get_id()]
 
 
 
@@ -317,16 +256,7 @@ class diskann2_index:
                         
             f.write(node_data.astype(np.float32).tobytes())
 
-        self.remove_from_node_w_buffer(node)
 
-
-        #self.index_file_rw_lock.release_write()
-
-    def dump_changed_nodes(self):
-        for node_id in self.node_w_buffer:
-            node = self.node_buffer[node_id]
-            self.dump_changed_node(node)
-        
      
            
 
@@ -374,8 +304,8 @@ class diskann2_index:
     
     def get_node(self, node_id):
         #with self.page_buffer_lock:
-        if node_id in self.node_buffer:
-            return self.node_buffer[node_id]
+        if node_id not in self.node_ids:
+            return None
         else:
             node = self.get_node_from_file(node_id)
             #if not node is None:
@@ -400,42 +330,44 @@ class diskann2_index:
             if new_node_id in self.node_ids:
                 new_node = self.get_node(new_node_id)
                 new_node.set_vector(vector)
+                self.node_ids[new_node_id] = vector
+   
+                self.dump_changed_node(new_node)
                 return
         
 
         new_node = Node(vector, new_node_id, self, self.max_neighbors)
 
-        with self.lock:
-            self.add_to_node_w_buffer(new_node)
-            self.add_to_node_r_buffer(new_node)
-            self.node_ids[new_node_id] = new_node_id
-
+ 
     
  
         top_k_node_ids,visited_node_ids = self.search(vector, 0, self.k, self.L, self.max_visits)
 
+        self.node_ids[new_node_id] = vector
+        self.dump_changed_node(new_node)
 
-
-        with self.lock:
-            new_node.add_neighbors(list(visited_node_ids))
-   
-            #print(f"find best page time: {end_time_3-start_time_3}")
-            
-
-            #print(f"add to buffer time: {end_time_1-start_time_1}")
 
 
         
-            # add the new node to the neighbor list of the neighbors
-            for neighbor_id in new_node.get_neighbor_ids():
-                
-    
-                if neighbor_id in self.node_ids:
-                    neighbor = self.get_node(neighbor_id)
+        new_node.add_neighbors(list(visited_node_ids))
 
-                    neighbor.add_neighbor(new_node_id)
-                
-                    self.add_to_node_w_buffer(neighbor)
+        #print(f"find best page time: {end_time_3-start_time_3}")
+        
+
+        #print(f"add to buffer time: {end_time_1-start_time_1}")
+
+
+    
+        # add the new node to the neighbor list of the neighbors
+        for neighbor_id in new_node.get_neighbor_ids():
+            
+
+            if neighbor_id in self.node_ids:
+                neighbor = self.get_node(neighbor_id)
+
+                neighbor.add_neighbor(new_node_id)
+            
+                self.dump_changed_node(neighbor)
 
         #print(new_node.get_neighbor_ids())      
         #print(f"add neighbors time: {end_time_2-start_time_2}")
@@ -471,29 +403,29 @@ class diskann2_index:
 
         #self.changed_pages[page_id] = page
         #with self.available_node_ids_lock:
-        with self.lock:
-            self.available_node_ids["deleted_node_ids"].append(deleted_node_id)
-            self.remove_from_node_r_buffer(deleted_node)
-            self.remove_from_node_w_buffer(deleted_node)
-            del self.node_ids[deleted_node_id]
+        
+        self.available_node_ids["deleted_node_ids"].append(deleted_node_id)
+     
+        del self.node_ids[deleted_node_id]
 
     
         # iterate through all the neighbors of the node and remove the node from their neighbor list
         # also add the neighbors of the node to the neighbor list of the neighbors to perserve the links: when a->delete_node and delete_node -> b, we add a->b
         #page.get_lock().acquire_read()
-            for neighbor_id in deleted_node.get_neighbor_ids():
-                
-                if neighbor_id not in self.node_ids:
-                    continue
+        for neighbor_id in deleted_node.get_neighbor_ids():
+            
+            if neighbor_id not in self.node_ids:
+                continue
 
-                neighbor = self.get_node(neighbor_id)
-                
-                if deleted_node_id in neighbor.get_neighbor_ids():
-                    neighbor.remove_neighbor(deleted_node_id)
-                    other_neighbor_ids =[other_neighbor_id for other_neighbor_id in deleted_node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
-                    neighbor.add_neighbors(other_neighbor_ids)
+            neighbor = self.get_node(neighbor_id)
+            
+            if deleted_node_id in neighbor.get_neighbor_ids():
+                neighbor.remove_neighbor(deleted_node_id)
+                other_neighbor_ids =[other_neighbor_id for other_neighbor_id in deleted_node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
+                neighbor.add_neighbors(other_neighbor_ids)
+                self.dump_changed_node(neighbor)
 
-                    self.add_to_node_w_buffer(neighbor)
+  
 
         
 
@@ -550,8 +482,7 @@ class diskann2_index:
             
 
             current_node = self.get_node(current_node_id)
-            with self.lock:
-                self.add_to_node_r_buffer(current_node)
+
 
      
 
@@ -583,11 +514,6 @@ class diskann2_index:
 
 
 
-
-if __name__ == '__main__':
-
-    index = diskann2_index(100, 50, 'index.bin', 'node_ids.json')
-    #load data from hdf5 file
 
 
 
