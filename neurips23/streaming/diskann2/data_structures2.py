@@ -45,9 +45,9 @@ class Node:
         #self.neighbor_ids = list(set(self.neighbor_ids))
 
 
-        #if len(self.neighbor_ids) > self.max_neighbors:
-        #    self.remove_deleted_neighbors()
-        #    self.prune_neighbors()
+        if len(self.neighbor_ids) > self.max_neighbors:
+            self.remove_deleted_neighbors()
+            self.prune_neighbors()
            
             
 
@@ -66,9 +66,9 @@ class Node:
             else:
                 continue
 
-        #if len(self.neighbor_ids) > self.max_neighbors:
-        #    self.remove_deleted_neighbors()
-        #    self.prune_neighbors()
+        if len(self.neighbor_ids) > self.max_neighbors:
+            self.remove_deleted_neighbors()
+            self.prune_neighbors()
             
            
      
@@ -199,7 +199,7 @@ class diskann2_index:
 
         self.node_size = 1+ self.dim + self.max_neighbors
 
-        self.node_buffer = {}
+
 
         
 
@@ -271,13 +271,7 @@ class diskann2_index:
 
 
 
-        #self.index_file_rw_lock.release_write()
 
-    def dump_changed_nodes(self):
-        for node_id in self.node_w_buffer:
-            node = self.node_buffer[node_id]
-            self.dump_changed_node(node)
-        
      
            
 
@@ -327,8 +321,7 @@ class diskann2_index:
         #with self.page_buffer_lock:
         if node_id not in self.node_ids:
             return None
-        elif node_id in self.node_buffer:
-            return self.node_buffer[node_id]
+
         else:
             node = self.get_node_from_file(node_id)
             #if not node is None:
@@ -355,8 +348,8 @@ class diskann2_index:
             new_node.set_vector(vector)
             with self.lock:
                 self.node_ids[new_node_id] = vector
-                self.node_buffer[new_node_id] = new_node
-                #self.dump_changed_node(new_node)
+   
+                self.dump_changed_node(new_node)
             return
         
 
@@ -369,11 +362,11 @@ class diskann2_index:
         top_k_node_ids,visited_node_ids = self.search(vector, 0, self.k, self.L, self.max_visits)
 
         new_node.add_neighbors(list(visited_node_ids))
-        self.node_buffer[new_node_id] = new_node
+
 
         with self.lock:
             self.node_ids[new_node_id] = vector
-            #self.dump_changed_node(new_node)
+            self.dump_changed_node(new_node)
 
 
 
@@ -388,9 +381,9 @@ class diskann2_index:
                 neighbor = self.get_node(neighbor_id)
 
                 neighbor.add_neighbor(new_node_id)
-                #with self.lock:
+                with self.lock:
             
-                #    self.dump_changed_node(neighbor)
+                    self.dump_changed_node(neighbor)
 
         #print(new_node.get_neighbor_ids())      
         #print(f"add neighbors time: {end_time_2-start_time_2}")
@@ -446,8 +439,8 @@ class diskann2_index:
                     neighbor.remove_neighbor(deleted_node_id)
                     other_neighbor_ids =[other_neighbor_id for other_neighbor_id in deleted_node.get_neighbor_ids() if other_neighbor_id != neighbor_id]
                     neighbor.add_neighbors(other_neighbor_ids)
-                    #with self.lock:
-                    #    self.dump_changed_node(neighbor)
+                    with self.lock:
+                        self.dump_changed_node(neighbor)
 
        
         
