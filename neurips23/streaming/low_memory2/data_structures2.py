@@ -351,13 +351,15 @@ class low_memory_index:
  
         top_k_node_ids,visited_node_ids = self.search(vector, 0, self.k, self.L, self.max_visits)
 
-        self.node_ids[new_node_id] = vector
-        self.dump_changed_node(new_node)
+        
 
 
 
         
         new_node.add_neighbors(list(visited_node_ids))
+
+        self.node_ids[new_node_id] = vector
+        self.dump_changed_node(new_node)
 
         #print(f"find best page time: {end_time_3-start_time_3}")
         
