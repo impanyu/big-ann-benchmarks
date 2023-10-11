@@ -500,7 +500,7 @@ class diskann2_index:
             
 
             current_node = self.get_node(current_node_id)
-            visiting_history.append({current_node_id, to_visit_distances[current_node_id]})
+            visiting_history.append([current_node_id, to_visit_distances[current_node_id]])
             
 
 
@@ -516,9 +516,6 @@ class diskann2_index:
                       
                 neighbor_distance = np.sum(np.square(np.array(neighbor_vector) - np.array(query_vector)))
                 
-                
-
-
                 if neighbor_id not in to_visit:
                     to_visit_distances[neighbor_id] = neighbor_distance
                     to_visit.append(neighbor_id)
