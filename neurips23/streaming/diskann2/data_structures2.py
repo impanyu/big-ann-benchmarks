@@ -471,6 +471,7 @@ class diskann2_index:
         visited = set() # Keep track of visited nodes
         #queried_nodes = set()
 
+        visiting_history = []
     
         #num_visits = 0
     
@@ -499,9 +500,10 @@ class diskann2_index:
             
 
             current_node = self.get_node(current_node_id)
- 
+            visiting_history.append({current_node_id, to_visit_distances[current_node_id]})
+            
 
-     
+
 
             neighbor_ids = current_node.get_neighbor_ids()
 
@@ -511,18 +513,18 @@ class diskann2_index:
                 if neighbor_id not in self.node_ids:
                     continue
                 neighbor_vector = self.node_ids[neighbor_id]
-           
-
+                      
                 neighbor_distance = np.sum(np.square(np.array(neighbor_vector) - np.array(query_vector)))
+                
+                
+
 
                 if neighbor_id not in to_visit:
                     to_visit_distances[neighbor_id] = neighbor_distance
                     to_visit.append(neighbor_id)
 
-            
 
-
-
+        print(visiting_history)
         top_k_node_ids = to_visit[:k]
         if len(top_k_node_ids) < k:
             top_k_node_ids.extend([0] * (k - len(top_k_node_ids)))
